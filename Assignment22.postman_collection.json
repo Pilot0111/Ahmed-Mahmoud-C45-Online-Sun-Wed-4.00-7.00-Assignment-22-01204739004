@@ -1,0 +1,69 @@
+{
+  "info": {
+    "_postman_id": "cc244c25-2033-4994-a58b-f787d8c564a6",
+    "name": "Assignment22",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47319938",
+    "_collection_link": "https://go.postman.co/collection/47319938-cc244c25-2033-4994-a58b-f787d8c564a6?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Signup",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"Ahmed\",\r\n  \"lastName\":\"Mahmoud\",\r\n  \"email\": \"pilot0111@gmail.com\",\r\n  \"password\": \"Password123!\",\r\n  \"cPassword\": \"Password123!\",\r\n  \"age\": 50,\r\n  \"gender\": \"male\",\r\n  \"phone\":\"0555136589\",\r\n  \"address\": \"Cairo\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/user/signup",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "user",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SignIn",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"firstName\": \"Ahmed\",\r\n  \"lastName\":\"Mahmoud\",\r\n  \"email\": \"pilot0111@gmail.com\",\r\n  \"password\": \"Password123!\",\r\n  \"cPassword\": \"Password123!\",\r\n  \"age\": 50,\r\n  \"gender\": \"male\",\r\n  \"phone\":\"0555136589\",\r\n  \"address\": \"Cairo\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/user/signup",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "user",
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

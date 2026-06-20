@@ -1,5 +1,6 @@
 import { AppError } from "../../utils/global-error-handler";
-import tokenService from "./toke.security";
+import { TokenService } from "./toke.security";
+const tokenService = null as any as TokenService;
 import { RedisService } from "../../service/redis.service";
 import userRepositoryInstance from "../../../DB/repositories/user.repository";
 
@@ -32,7 +33,7 @@ export class AuthGraphQL {
     const secret = prefix === "Admin" ? JWT_ACCESS_SECRET_ADMIN : JWT_ACCESS_SECRET_USER;
 
     // 2. Verify Token
-    const decoded = tokenService.verifyToken({ token, secret_key: secret });
+    const decoded = await tokenService.verifyToken({ token, secret_key: secret });
     if (!decoded || !decoded.id) {
       throw new GraphQLError("Invalid or expired token", {
         extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },

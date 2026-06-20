@@ -1,5 +1,6 @@
 import { symmetricDecryption } from "../utils/security/encrypt.security";
-import tokenService from "../utils/security/toke.security";
+import { TokenService } from "../utils/security/toke.security";
+const tokenService = null as any as TokenService;
 import userRepositoryInstance from "../../DB/repositories/user.repository";
 import { JWT_ACCESS_SECRET_ADMIN, JWT_ACCESS_SECRET_USER, JWT_REFRESH_SECRET_ADMIN, JWT_REFRESH_SECRET_USER, PREFIX_ADMIN, PREFIX_USER } from "../../config/config.service";
 import { RedisService } from "src/common/service/redis.service";
@@ -47,7 +48,7 @@ export const authentication = async (
     } else {
       return next(new AppError("Authentication error: Invalid prefix", 401));
     }
-    const decoded: any = tokenService.verifyToken({
+    const decoded: any = await tokenService.verifyToken({
       token,
       secret_key: JWT_ACCESS_SECRET,
     });
@@ -125,7 +126,7 @@ export const socketIOauth = async (socket: Socket, next: (err?: any) => void) =>
       return next(new AppError("Authentication error: Invalid prefix", 401));
     }
 
-    const decoded: any = tokenService.verifyToken({
+    const decoded: any = await tokenService.verifyToken({
       token,
       secret_key: secret,
     });

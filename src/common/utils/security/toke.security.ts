@@ -1,35 +1,35 @@
-import jwt, { Secret, SignOptions, JwtPayload } from "jsonwebtoken";
+import { Injectable } from "@nestjs/common";
+import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 
-class TokenService {
-  constructor() {}
+@Injectable()
+export class TokenService {
+  constructor(private readonly jwtService: JwtService) {}
 
-  generateToken = ({
+  async generateToken({
     payload,
     secret_key,
     options = {},
   }: {
-    payload: object;
-    secret_key: Secret | undefined;
-    options?: SignOptions;
-  }): string => {
+    payload: object | Buffer;
+    secret_key: string | undefined;
+    options?: JwtSignOptions;
+  }): Promise<string> {
     if (!secret_key) {
       throw new Error("Token secret key is required");
     }
-    return jwt.sign(payload, secret_key, options);
-  };
+    return await this.jwtService.signAsync(payload as object, { secret: secret_key, ...options });
+  }
 
-  verifyToken = ({
+  async verifyToken({
     token,
     secret_key,
   }: {
     token: string;
-    secret_key: Secret | undefined;
-  }): JwtPayload => {
+    secret_key: string | undefined;
+  }): Promise<any> {
     if (!secret_key) {
       throw new Error("Token secret key is required");
     }
-    return jwt.verify(token, secret_key) as JwtPayload;
-  };
+    return await this.jwtService.verifyAsync(token, { secret: secret_key });
+  }
 }
-
-export default new TokenService();

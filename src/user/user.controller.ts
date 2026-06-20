@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
 
 export class AppError extends HttpException {
   constructor() {
@@ -52,6 +53,19 @@ export class UserController {
     //   throw new AppError();
     // }
     return this.userService.signUp(Body);
+  }
+
+  @Post('login')
+  login(
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+    body: LoginDto,
+  ): object {
+    return this.userService.login(body);
   }
 
   @Get()

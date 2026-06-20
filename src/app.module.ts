@@ -5,9 +5,13 @@ import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { Connection } from 'mongoose';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule.register({
+      global: true, // Makes JwtService available everywhere
+    }),
     ConfigModule.forRoot({
       envFilePath: ['.env.development', '.env.production'],
       isGlobal: true,
