@@ -1,8 +1,8 @@
+import { BadRequestException } from '@nestjs/common';
 import { Request } from "express";
 import multer, { FileFilterCallback } from "multer";
 import { File_Type_Enum, Store_Enum } from "../enum/multer.enum";
 import { tmpdir } from "node:os";
-import { AppError } from "../utils/global-error-handler";
 
 const multerCloud = ({
   store_type = Store_Enum.memory,
@@ -37,7 +37,7 @@ const multerCloud = ({
     if (file.mimetype.startsWith(custom_types)) {
       cb(null, true);
     } else {
-      cb(new AppError("Invalid file type", 400) as any, false);
+      cb(new BadRequestException("Invalid file type") as any, false);
     }
   };
 

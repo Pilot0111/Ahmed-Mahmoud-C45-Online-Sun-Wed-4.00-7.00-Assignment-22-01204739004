@@ -10,16 +10,19 @@ import {
   HttpException,
   BadRequestException,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  UploadedFiles,
 } from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 import { UserService } from './user.service';
+import { multerOptions, Store_Enum } from 'src/common/utils/multer.utlis';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-
-export class AppError extends HttpException {
-  constructor() {
-    super('Forbidden', HttpStatus.FORBIDDEN);
-  }
-}
+import { Auth } from 'src/common/decorator/auth.decorator';
+import { User } from 'src/common/decorator/user.decorator';
+import { ResponceInterceptor } from 'src/common/interceptor/responce.interceptor';
 
 @Controller('user')
 export class UserController {
@@ -50,7 +53,7 @@ export class UserController {
       });
     }
     // if (Body.age > 20) {
-    //   throw new AppError();
+    //   throw new BadRequestException();
     // }
     return this.userService.signUp(Body);
   }
@@ -69,7 +72,11 @@ export class UserController {
   }
 
   @Get()
-  getUsers(): object {
+  @Auth()
+  @UseInterceptors(ResponceInterceptor)
+  getUsers(@User() user: any): object {
+    // You now have direct access to the authenticated user here!
+    console.log('Authenticated User:', user);
     return this.userService.getUsers();
   }
 
@@ -89,5 +96,41 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string): object {
     return this.userService.remove(+id);
+  }
+
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('attachment', multerOptions({ store_type: Store_Enum.disk }))
+  )
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return this.userService.uploadFile(file);
+  }
+
+  @Post('uploadMulti')
+  @UseInterceptors(
+    FilesInterceptor('attachments', 5, multerOptions({ store_type: Store_Enum.disk }))
+  )
+  uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
+    return files;
+  }
+
+  @Post('uploadFields')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'avatar', maxCount: 1 },
+        { name: 'background', maxCount: 3 },
+      ],
+      multerOptions({ store_type: Store_Enum.disk })
+    )
+  )
+  uploadFileFields(
+    @UploadedFiles()
+    files: {
+      avatar?: Express.Multer.File[];
+      background?: Express.Multer.File[];
+    },
+  ) {
+    return files;
   }
 }

@@ -1,7 +1,6 @@
 import { Model } from "mongoose";
-import { Injectable } from "@nestjs/common";
+import { Injectable , BadRequestException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { AppError } from "../../common/utils/global-error-handler";
 import BaseRepository from "./base.repository";
 import { User, UserSchema } from "../models/user.model";
 import mongoose from "mongoose";
@@ -14,7 +13,7 @@ export class UserRepository extends BaseRepository<User> {
   async checkUser(email: string): Promise<boolean> {
     const emailExists = await this.findOne({ filter: { email } });
     if (emailExists) {
-      throw new AppError("Email already exists", 409);
+      throw new BadRequestException("Email already exists");
     }
     return true;
   }

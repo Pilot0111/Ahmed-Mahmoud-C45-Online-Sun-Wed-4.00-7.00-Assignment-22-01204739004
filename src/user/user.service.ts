@@ -11,7 +11,10 @@ import { RedisService } from 'src/common/service/redis.service';
 import { LoginDto } from './dto/login.dto';
 import { comparePassword } from 'src/common/utils/security/hash.security';
 import { TokenService } from 'src/common/utils/security/toke.security';
-import { JWT_ACCESS_SECRET_USER, JWT_REFRESH_SECRET_USER } from 'src/config/config.service';
+import { S3Service } from 'src/common/service/s3.service';
+import { Express } from 'express';
+
+
 
 @Injectable()
 export class UserService {
@@ -19,6 +22,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly redisService: RedisService,
     private readonly tokenService: TokenService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async getUsers() {
@@ -145,13 +149,13 @@ export class UserService {
 
     const accessToken = await this.tokenService.generateToken({
       payload: { id: user._id, role: user.role },
-      secret_key: JWT_ACCESS_SECRET_USER,
+      secret_key: process.env.JWT_ACCESS_SECRET_USER,
       options: { expiresIn: '1h' },
     });
 
     const refreshToken = await this.tokenService.generateToken({
       payload: { id: user._id, role: user.role },
-      secret_key: JWT_REFRESH_SECRET_USER,
+      secret_key: process.env.JWT_REFRESH_SECRET_USER,
       options: { expiresIn: '7d' },
     });
 
@@ -165,5 +169,10 @@ export class UserService {
         role: user.role,
       },
     };
+  }
+
+  async uploadFile(file: Express.Multer.File) {
+    const fileUrl = await this.s3Service.uploadFile({ file, path: 'users' });
+    return { message: 'File uploaded successfully', url: fileUrl };
   }
 }

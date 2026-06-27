@@ -1,4 +1,4 @@
-import { AppError } from "../../utils/global-error-handler";
+import { BadRequestException } from '@nestjs/common';
 import { TokenService } from "./toke.security";
 const tokenService = null as any as TokenService;
 import { RedisService } from "../../service/redis.service";
@@ -7,10 +7,7 @@ import userRepositoryInstance from "../../../DB/repositories/user.repository";
 // Dummy instance to satisfy TS compiler for legacy code
 const redisService = null as any as RedisService;
 
-import {
-  JWT_ACCESS_SECRET_ADMIN,
-  JWT_ACCESS_SECRET_USER,
-} from "../../../config/config.service";
+
 import { RoleEnum } from "../../enum/user.enum";
 import { GraphQLError } from "graphql";
 
@@ -30,7 +27,7 @@ export class AuthGraphQL {
     }
 
     // 1. Determine secret based on prefix (logic from your middleware)
-    const secret = prefix === "Admin" ? JWT_ACCESS_SECRET_ADMIN : JWT_ACCESS_SECRET_USER;
+    const secret = prefix === "Admin" ? process.env.JWT_ACCESS_SECRET_ADMIN : process.env.JWT_ACCESS_SECRET_USER;
 
     // 2. Verify Token
     const decoded = await tokenService.verifyToken({ token, secret_key: secret });

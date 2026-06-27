@@ -1,3 +1,4 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
@@ -7,19 +8,17 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import {
-  AWS_ACCESS_KEY_ID,
-  AWS_BUCKET_NAME,
-  AWS_REGION,
-  AWS_SECRET_ACCESS_KEY,
-} from "../../config/config.service";
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID as string;
+const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME as string;
+const AWS_REGION = process.env.AWS_REGION as string;
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY as string;
 import { randomUUID } from "node:crypto";
 import { Store_Enum } from "../enum/multer.enum";
 import fs from "node:fs";
-import { AppError } from "../utils/global-error-handler";
 import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+@Injectable()
 export class S3Service {
   private client: S3Client;
 
@@ -58,7 +57,7 @@ export class S3Service {
       return key;
     } catch (error) {
       console.error("S3 PutObject Error:", error); // Log the original error for debugging
-      throw new AppError("Failed to upload file to S3", 500);
+      throw new BadRequestException("Failed to upload file to S3");
     }
   }
   async uploadLargeFile({
@@ -96,7 +95,7 @@ export class S3Service {
       return result.Key || key;
     } catch (error) {
       console.error("S3 UploadLargeFile Error:", error); // Log the original error for debugging
-      throw new AppError("Failed to upload large file to S3", 500);
+      throw new BadRequestException("Failed to upload large file to S3");
     }
   }
   async uploadFiles({
@@ -129,7 +128,7 @@ export class S3Service {
       return urls;
     } catch (error) {
       console.error("S3 UploadFiles Error:", error); // Log the original error for debugging
-      throw new AppError("Failed to upload files to S3", 500);
+      throw new BadRequestException("Failed to upload files to S3");
     }
   }
   async creatPresignedUrl({
@@ -154,7 +153,7 @@ export class S3Service {
       return {url, Key};
     } catch (error) {
       console.error("S3 CreatePresignedUrl Error:", error); // Log the original error for debugging
-      throw new AppError("Failed to create presigned URL for S3", 500);
+      throw new BadRequestException("Failed to create presigned URL for S3");
     }
   }
 
@@ -167,7 +166,7 @@ export class S3Service {
       await this.client.send(command);
     } catch (error) {
       console.error("S3 DeleteObject Error:", error);
-      throw new AppError("Failed to delete file from S3", 500);
+      throw new BadRequestException("Failed to delete file from S3");
     }
   }
 
@@ -185,9 +184,9 @@ export class S3Service {
     } catch (error: any) {
       console.error("S3 getFile Error:", error.name, error.message);
       if (error.name === "NoSuchKey") {
-        throw new AppError("File not found in S3", 404);
+        throw new BadRequestException("File not found in S3");
       }
-      throw new AppError("Failed to get file from S3", 500);
+      throw new BadRequestException("Failed to get file from S3");
     }
   }
 
@@ -202,7 +201,7 @@ export class S3Service {
       await this.client.send(command);
     } catch (error) {
       console.error("S3 DeleteObjects Error:", error);
-      throw new AppError("Failed to delete files from S3", 500);
+      throw new BadRequestException("Failed to delete files from S3");
     }
   }
 
@@ -221,7 +220,7 @@ export class S3Service {
       return result.Contents || [];
     } catch (error) {
       console.error("S3 listFiles Error:", error);
-      throw new AppError("Failed to list files from S3", 500);
+      throw new BadRequestException("Failed to list files from S3");
     }
   }
 
@@ -243,7 +242,7 @@ export class S3Service {
       return { url };
     } catch (error) {
       console.error("S3 getPresignedUrl Error:", error);
-      throw new AppError("Failed to create presigned URL for S3", 500);
+      throw new BadRequestException("Failed to create presigned URL for S3");
     }
   }
   async getPresignedUrlByKey({
@@ -272,9 +271,9 @@ export class S3Service {
     } catch (error: any) {
       console.error("S3 getPresignedUrl Error:", error.name, error.message);
       if (error.name === "NoSuchKey") {
-        throw new AppError("File not found in S3", 404);
+        throw new BadRequestException("File not found in S3");
       }
-      throw new AppError("Failed to create presigned URL for S3", 500);
+      throw new BadRequestException("Failed to create presigned URL for S3");
     }
   }
 }

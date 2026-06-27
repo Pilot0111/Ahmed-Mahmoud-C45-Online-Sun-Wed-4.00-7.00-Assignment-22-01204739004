@@ -1,8 +1,8 @@
+import { BadRequestException } from '@nestjs/common';
 import { initializeApp, App, cert } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
 import path from "node:path";
 import { existsSync } from "node:fs";
-import { AppError } from "../utils/global-error-handler";
 
 export class NotificationService {
   private readonly client?: App;
@@ -47,7 +47,7 @@ export class NotificationService {
     body: string;
   }): Promise<string> {
     if (!this.client) {
-      throw new AppError("Notification service is not initialized (missing credentials)", 500);
+      throw new BadRequestException("Notification service is not initialized (missing credentials)");
     }
     try {
       const response = await getMessaging(this.client).send({
@@ -65,7 +65,7 @@ export class NotificationService {
       return response;
     } catch (error: any) {
       console.error("FCM Error sending notification:", error);
-      throw new AppError(error.message || "Failed to send notification", 500);
+      throw new BadRequestException(error.message || "Failed to send notification");
     }
   }
   async sendNotifications({
@@ -84,7 +84,7 @@ export class NotificationService {
       return results;
     } catch (error: any) {
       console.error("FCM Error sending multicast notification:", error);
-      throw new AppError(error.message || "Failed to send notification", 500);
+      throw new BadRequestException(error.message || "Failed to send notification");
     }
   }
 }

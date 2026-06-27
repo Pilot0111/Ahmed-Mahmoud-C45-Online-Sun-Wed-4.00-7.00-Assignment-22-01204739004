@@ -1,6 +1,6 @@
+import { BadRequestException } from '@nestjs/common';
 import { NextFunction, Request, Response } from "express";
 import { ZodType } from "zod";
-import { AppError } from "../utils/global-error-handler";
 import { GraphQLError } from "graphql";
 
 type reqType = keyof Request;
@@ -27,7 +27,7 @@ export const Validation = (schema: schemaType) => {
       }
     }
     if (validationErrors.length > 0) {
-      return next(new AppError(validationErrors.join(", "), 400));
+      return next(new BadRequestException(validationErrors.join(", ")));
     }
     next();
   };
