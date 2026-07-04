@@ -6,6 +6,7 @@ import { UserRepository } from 'src/DB/repositories/user.repository';
 import { RedisModule } from 'src/common/redis/redis.module';
 import { TokenService } from 'src/common/utils/security/toke.security';
 import { S3Service } from 'src/common/service/s3.service';
+import { NotificationService } from 'src/common/service/notification.service';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { S3Service } from 'src/common/service/s3.service';
     RedisModule,
   ],
   controllers: [UserController],
-  providers: [UserService, UserRepository, TokenService, S3Service],
+  providers: [UserService, UserRepository, TokenService, S3Service, NotificationService],
 })
 export class UserModule {}

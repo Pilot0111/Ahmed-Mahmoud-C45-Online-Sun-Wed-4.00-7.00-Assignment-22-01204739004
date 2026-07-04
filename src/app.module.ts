@@ -6,6 +6,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { Connection } from 'mongoose';
 import { JwtModule } from '@nestjs/jwt';
+import { BrandModule } from './brand/brand.module';
+import { CategoryModule } from './category/category.module';
+import { SubCategoryModule } from './sub-category/sub-category.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -32,6 +36,10 @@ import { JwtModule } from '@nestjs/jwt';
       },
     }),
     UserModule,
+    BrandModule,
+    CategoryModule,
+    SubCategoryModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

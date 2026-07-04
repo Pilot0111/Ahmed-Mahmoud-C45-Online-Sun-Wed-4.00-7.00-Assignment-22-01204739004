@@ -41,14 +41,14 @@ const multerCloud = ({
     }
   };
 
-  const upload = multer({
+  const options = {
     storage,
     fileFilter,
     limits: {
       fileSize: MaxFileSize,
     },
-  });
-  return upload;
+  };
+  return options;
 };
 
 export default multerCloud;
