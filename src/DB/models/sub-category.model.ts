@@ -43,11 +43,26 @@ export class SubCategory {
 
 export const SubCategorySchema = SchemaFactory.createForClass(SubCategory);
 
-SubCategorySchema.pre(['findOneAndUpdate', 'updateOne'], function () {
+SubCategorySchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
   const updated = this.getUpdate() as UpdateQuery<SubCategory>;
   if (updated?.name) {
     updated.slug = slugify(updated.name as string, { replacement: '-', trim: true, lower: true });
   }
+
+  if (updated?.deletedAt) {
+    const docToUpdate = await this.model.findOne(this.getQuery());
+    if (docToUpdate) {
+      const mongoose = require('mongoose');
+      const Product = mongoose.models.Product || mongoose.model('Product');
+      if (Product) {
+        await Product.updateMany(
+          { subCategoryId: docToUpdate._id, deletedAt: { $exists: false } },
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+        );
+      }
+    }
+  }
+  // End hook
 });
 
 export type HydratedSubCategoryDocument = HydratedDocument<SubCategory>;

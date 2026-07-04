@@ -42,11 +42,37 @@ export class Category {
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
 
-CategorySchema.pre(['findOneAndUpdate', 'updateOne'], function () {
+CategorySchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
   const updated = this.getUpdate() as UpdateQuery<Category>;
   if (updated?.name) {
     updated.slug = slugify(updated.name as string, { replacement: '-', trim: true, lower: true });
   }
+
+  // Soft delete cascading
+  if (updated?.deletedAt) {
+    const docToUpdate = await this.model.findOne(this.getQuery());
+    if (docToUpdate) {
+      // Need to require mongoose to get registered models
+      const mongoose = require('mongoose');
+      
+      const SubCategory = mongoose.models.SubCategory || mongoose.model('SubCategory');
+      if (SubCategory) {
+        await SubCategory.updateMany(
+          { categoryId: docToUpdate._id, deletedAt: { $exists: false } },
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+        );
+      }
+
+      const Product = mongoose.models.Product || mongoose.model('Product');
+      if (Product) {
+        await Product.updateMany(
+          { categoryId: docToUpdate._id, deletedAt: { $exists: false } },
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+        );
+      }
+    }
+  }
+  // End hook
 });
 
 export type HydratedCategoryDocument = HydratedDocument<Category>;

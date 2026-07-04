@@ -53,11 +53,26 @@ export class Brand {
 
 export const BrandSchema = SchemaFactory.createForClass(Brand);
 
-BrandSchema.pre(['findOneAndUpdate', 'updateOne'], function () {
+BrandSchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
   const updated = this.getUpdate() as UpdateQuery<Brand>;
   if (updated?.name) {
     updated.slug = slugify(updated.name as string, { replacement: '-', trim: true, lower: true });
   }
+
+  if (updated?.deletedAt) {
+    const docToUpdate = await this.model.findOne(this.getQuery());
+    if (docToUpdate) {
+      const mongoose = require('mongoose');
+      const Product = mongoose.models.Product || mongoose.model('Product');
+      if (Product) {
+        await Product.updateMany(
+          { brandId: docToUpdate._id, deletedAt: { $exists: false } },
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+        );
+      }
+    }
+  }
+  // End hook
 });
 
 export type HydratedBrandDocument = HydratedDocument<Brand>;
