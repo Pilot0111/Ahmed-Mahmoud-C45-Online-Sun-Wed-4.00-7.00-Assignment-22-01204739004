@@ -48,7 +48,9 @@ export class AuthorizationGuard implements CanActivate {
 
       const hasRole = requiredRoles.includes(user.role);
       if (!hasRole) {
-        throw new UnauthorizedException('Unauthorized: Insufficient permissions');
+        throw new UnauthorizedException(
+          'Unauthorized: Insufficient permissions',
+        );
       }
 
       return true;

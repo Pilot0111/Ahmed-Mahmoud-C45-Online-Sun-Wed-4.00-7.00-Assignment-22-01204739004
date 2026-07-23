@@ -1,8 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
-import { initializeApp, App, cert } from "firebase-admin/app";
-import { getMessaging } from "firebase-admin/messaging";
-import path from "node:path";
-import { existsSync } from "node:fs";
+import { initializeApp, App, cert, getApps, getApp } from 'firebase-admin/app';
+import { getMessaging } from 'firebase-admin/messaging';
+import path from 'node:path';
+import { existsSync } from 'node:fs';
 
 export class NotificationService {
   private readonly client?: App;
@@ -22,18 +22,26 @@ export class NotificationService {
       });
     } else {
       // Fallback to local file for development (Ensure this is in .gitignore)
-      const serviceAccountPath = path.resolve(process.cwd(), "src/config/firebase-service-account.json");
+      const serviceAccountPath = path.resolve(
+        process.cwd(),
+        'src/config/firebase-service-account.json',
+      );
       if (existsSync(serviceAccountPath)) {
         cred = cert(serviceAccountPath);
       } else {
-        console.warn("Firebase credentials not found in Environment or local config file.");
+        console.warn(
+          'Firebase credentials not found in Environment or local config file.',
+        );
       }
     }
 
     if (cred) {
-      this.client = initializeApp({
-        credential: cred,
-      });
+      this.client =
+        getApps().length === 0
+          ? initializeApp({
+              credential: cred,
+            })
+          : getApp();
     }
   }
 
@@ -47,7 +55,9 @@ export class NotificationService {
     body: string;
   }): Promise<string> {
     if (!this.client) {
-      throw new BadRequestException("Notification service is not initialized (missing credentials)");
+      throw new BadRequestException(
+        'Notification service is not initialized (missing credentials)',
+      );
     }
     try {
       const response = await getMessaging(this.client).send({
@@ -61,11 +71,13 @@ export class NotificationService {
           },
         },
       });
-      console.log("Successfully sent message to FCM:", response);
+      console.log('Successfully sent message to FCM:', response);
       return response;
     } catch (error: any) {
-      console.error("FCM Error sending notification:", error);
-      throw new BadRequestException(error.message || "Failed to send notification");
+      console.error('FCM Error sending notification:', error);
+      throw new BadRequestException(
+        error.message || 'Failed to send notification',
+      );
     }
   }
   async sendNotifications({
@@ -79,12 +91,16 @@ export class NotificationService {
   }): Promise<string[]> {
     try {
       const results = await Promise.all(
-        tokens.map((token) => this.sendPushNotification({ token, title, body }))
+        tokens.map((token) =>
+          this.sendPushNotification({ token, title, body }),
+        ),
       );
       return results;
     } catch (error: any) {
-      console.error("FCM Error sending multicast notification:", error);
-      throw new BadRequestException(error.message || "Failed to send notification");
+      console.error('FCM Error sending multicast notification:', error);
+      throw new BadRequestException(
+        error.message || 'Failed to send notification',
+      );
     }
   }
 }

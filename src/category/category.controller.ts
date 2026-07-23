@@ -12,7 +12,12 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
-import { CreateCategoryDto, UpdateCategoryDto, IdDto, QueryDto } from './dto/category.dto';
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  IdDto,
+  QueryDto,
+} from './dto/category.dto';
 import { CategoryService } from './category.service';
 import { ResponceInterceptor } from 'src/common/interceptor/responce.interceptor';
 import { RoleEnum } from 'src/common/enum/user.enum';
@@ -31,7 +36,8 @@ export class CategoryController {
   @Auth({ access_roles: [RoleEnum.admin] })
   @UseInterceptors(FileInterceptor('attachment', multerCloud()))
   async createCategory(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: CreateCategoryDto,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: CreateCategoryDto,
     @UploadedFile(ParseFilePipe) file: Express.Multer.File,
     @User() user: HydratedUserDocument,
   ) {
@@ -50,7 +56,8 @@ export class CategoryController {
     @Param() params: IdDto,
     @Body() body: UpdateCategoryDto,
     @User() user: HydratedUserDocument,
-    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file?: Express.Multer.File,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false }))
+    file?: Express.Multer.File,
   ) {
     // Note: If you want to update the file, you would handle it in the service.
     // For now, mirroring the brand functionality which mainly updates the body.

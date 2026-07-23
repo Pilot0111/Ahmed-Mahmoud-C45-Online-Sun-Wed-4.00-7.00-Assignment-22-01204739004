@@ -1,6 +1,15 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, Length, IsMongoId, IsPositive, IsNumber, IsOptional, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Length,
+  IsMongoId,
+  IsPositive,
+  IsNumber,
+  IsOptional,
+  Min,
+} from 'class-validator';
 import { Types } from 'mongoose';
 import { AtLeastOne } from 'src/common/decorator/common.decorator';
 
@@ -45,7 +54,16 @@ export class CreateProductDto {
   stock: number;
 }
 
-@AtLeastOne(['name', 'description', 'brandId', 'categoryId', 'subCategoryId', 'price', 'discount', 'stock'])
+@AtLeastOne([
+  'name',
+  'description',
+  'brandId',
+  'categoryId',
+  'subCategoryId',
+  'price',
+  'discount',
+  'stock',
+])
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
 
 export class IdDto {

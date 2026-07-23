@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { userModel } from 'src/DB/models/user.model';
@@ -8,12 +8,22 @@ import { TokenService } from 'src/common/utils/security/toke.security';
 import { S3Service } from 'src/common/service/s3.service';
 import { NotificationService } from 'src/common/service/notification.service';
 
+@Global()
 @Module({
-  imports: [
-    userModel,
-    RedisModule,
-  ],
+  imports: [userModel, RedisModule],
   controllers: [UserController],
-  providers: [UserService, UserRepository, TokenService, S3Service, NotificationService],
+  providers: [
+    UserService,
+    UserRepository,
+    TokenService,
+    S3Service,
+    NotificationService,
+  ],
+  exports: [
+    UserRepository,
+    TokenService,
+    S3Service,
+    NotificationService,
+  ],
 })
 export class UserModule {}

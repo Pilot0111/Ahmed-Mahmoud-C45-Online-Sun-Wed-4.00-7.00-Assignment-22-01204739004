@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory, MongooseModule } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
 import { Types, HydratedDocument, UpdateQuery } from 'mongoose';
 import { User } from './user.model';
 import slugify from 'slugify';
@@ -24,7 +25,7 @@ export class Category {
   @Prop({ type: String, required: true })
   image: string;
 
-  @Prop([{ type: Types.ObjectId, ref: 'Brand' }])
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Brand' }] })
   brands: Types.ObjectId[];
 
   @Prop({ type: Types.ObjectId, ref: User.name, required: true })
@@ -45,7 +46,11 @@ export const CategorySchema = SchemaFactory.createForClass(Category);
 CategorySchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
   const updated = this.getUpdate() as UpdateQuery<Category>;
   if (updated?.name) {
-    updated.slug = slugify(updated.name as string, { replacement: '-', trim: true, lower: true });
+    updated.slug = slugify(updated.name as string, {
+      replacement: '-',
+      trim: true,
+      lower: true,
+    });
   }
 
   // Soft delete cascading
@@ -54,12 +59,13 @@ CategorySchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
     if (docToUpdate) {
       // Need to require mongoose to get registered models
       const mongoose = require('mongoose');
-      
-      const SubCategory = mongoose.models.SubCategory || mongoose.model('SubCategory');
+
+      const SubCategory =
+        mongoose.models.SubCategory || mongoose.model('SubCategory');
       if (SubCategory) {
         await SubCategory.updateMany(
           { categoryId: docToUpdate._id, deletedAt: { $exists: false } },
-          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy },
         );
       }
 
@@ -67,7 +73,7 @@ CategorySchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
       if (Product) {
         await Product.updateMany(
           { categoryId: docToUpdate._id, deletedAt: { $exists: false } },
-          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy },
         );
       }
     }

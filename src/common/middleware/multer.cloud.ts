@@ -1,15 +1,15 @@
 import { BadRequestException } from '@nestjs/common';
-import { Request } from "express";
-import multer, { FileFilterCallback } from "multer";
-import { File_Type_Enum, Store_Enum } from "../enum/multer.enum";
-import { tmpdir } from "node:os";
+import { Request } from 'express';
+import multer, { FileFilterCallback } from 'multer';
+import { File_Type_Enum, Store_Enum } from '../enum/multer.enum';
+import { tmpdir } from 'node:os';
 
 const multerCloud = ({
   store_type = Store_Enum.memory,
   custom_types = File_Type_Enum.image,
-  MaxFileSize = 1024 * 1024* 5, // 5MB
+  MaxFileSize = 1024 * 1024 * 5, // 5MB
 }: {
-  store_type?: Store_Enum; 
+  store_type?: Store_Enum;
   custom_types?: File_Type_Enum;
   MaxFileSize?: number;
 } = {}) => {
@@ -24,8 +24,8 @@ const multerCloud = ({
             cb: Function,
           ) {
             const uniqueSuffix =
-              Date.now() + "-" + Math.round(Math.random() * 1e9);
-            cb(null, uniqueSuffix + "_" + file.originalname);
+              Date.now() + '-' + Math.round(Math.random() * 1e9);
+            cb(null, uniqueSuffix + '_' + file.originalname);
           },
         });
 
@@ -37,7 +37,7 @@ const multerCloud = ({
     if (file.mimetype.startsWith(custom_types)) {
       cb(null, true);
     } else {
-      cb(new BadRequestException("Invalid file type") as any, false);
+      cb(new BadRequestException('Invalid file type') as any, false);
     }
   };
 

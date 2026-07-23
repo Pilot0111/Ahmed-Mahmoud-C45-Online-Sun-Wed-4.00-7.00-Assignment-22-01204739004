@@ -10,9 +10,14 @@ import { BrandModule } from './brand/brand.module';
 import { CategoryModule } from './category/category.module';
 import { SubCategoryModule } from './sub-category/sub-category.module';
 import { ProductModule } from './product/product.module';
+import { CartModule } from './cart/cart.module';
+import { CouponModule } from './coupon/coupon.module';
+import { OrderModule } from './order/order.module';
+import { RedisModule } from './common/redis/redis.module';
 
 @Module({
   imports: [
+    RedisModule,
     JwtModule.register({
       global: true, // Makes JwtService available everywhere
     }),
@@ -23,9 +28,7 @@ import { ProductModule } from './product/product.module';
     MongooseModule.forRoot(process.env.MONGO_URI!, {
       onConnectionCreate: (connection: Connection) => {
         connection.on('connected', () =>
-          console.log(
-            'connected to MongoDB successfully .....😊😊😊😊!',
-          ),
+          console.log('connected to MongoDB successfully .....😊😊😊😊!'),
         );
         connection.on('open', () => console.log('open'));
         connection.on('disconnected', () => console.log('disconnected'));
@@ -40,6 +43,9 @@ import { ProductModule } from './product/product.module';
     CategoryModule,
     SubCategoryModule,
     ProductModule,
+    CartModule,
+    CouponModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

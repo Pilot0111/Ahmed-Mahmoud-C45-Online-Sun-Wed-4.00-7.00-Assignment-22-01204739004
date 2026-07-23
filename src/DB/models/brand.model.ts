@@ -56,7 +56,11 @@ export const BrandSchema = SchemaFactory.createForClass(Brand);
 BrandSchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
   const updated = this.getUpdate() as UpdateQuery<Brand>;
   if (updated?.name) {
-    updated.slug = slugify(updated.name as string, { replacement: '-', trim: true, lower: true });
+    updated.slug = slugify(updated.name as string, {
+      replacement: '-',
+      trim: true,
+      lower: true,
+    });
   }
 
   if (updated?.deletedAt) {
@@ -67,7 +71,7 @@ BrandSchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
       if (Product) {
         await Product.updateMany(
           { brandId: docToUpdate._id, deletedAt: { $exists: false } },
-          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy },
         );
       }
     }

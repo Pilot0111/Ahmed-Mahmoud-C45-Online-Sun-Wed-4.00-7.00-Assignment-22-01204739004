@@ -12,7 +12,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { SubCategoryService } from './sub-category.service';
-import { CreateSubCategoryDto, IdDto, QueryDto, UpdateSubCategoryDto } from './dto/sub-category.dto';
+import {
+  CreateSubCategoryDto,
+  IdDto,
+  QueryDto,
+  UpdateSubCategoryDto,
+} from './dto/sub-category.dto';
 import { Auth } from 'src/common/decorator/auth.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import multerCloud from 'src/common/middleware/multer.cloud';
@@ -27,7 +32,8 @@ export class SubCategoryController {
   @Post()
   @UseInterceptors(FileInterceptor('image', multerCloud()))
   create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: CreateSubCategoryDto,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: CreateSubCategoryDto,
     @UploadedFile() file: Express.Multer.File,
     @User() user: HydratedUserDocument,
   ) {
@@ -38,14 +44,18 @@ export class SubCategoryController {
   @Put('/:id')
   update(
     @Param() { id }: IdDto,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: UpdateSubCategoryDto,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: UpdateSubCategoryDto,
     @User() user: HydratedUserDocument,
   ) {
     return this.subCategoryService.updateSubCategory(body, id, user);
   }
 
   @Get()
-  getAll(@Query(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) query: QueryDto) {
+  getAll(
+    @Query(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    query: QueryDto,
+  ) {
     return this.subCategoryService.getAllSubCategories(query);
   }
 

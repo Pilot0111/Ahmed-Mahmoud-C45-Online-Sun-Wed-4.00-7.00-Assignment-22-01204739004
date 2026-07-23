@@ -1,7 +1,6 @@
-
 export enum providerEnum {
-  system = "system",
-  google = "google",
-  facebook = "facebook",
-  github = "github",
+  system = 'system',
+  google = 'google',
+  facebook = 'facebook',
+  github = 'github',
 }

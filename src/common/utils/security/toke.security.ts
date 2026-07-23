@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { JwtService, JwtSignOptions } from "@nestjs/jwt";
+import { Injectable } from '@nestjs/common';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
 @Injectable()
 export class TokenService {
@@ -15,9 +15,12 @@ export class TokenService {
     options?: JwtSignOptions;
   }): Promise<string> {
     if (!secret_key) {
-      throw new Error("Token secret key is required");
+      throw new Error('Token secret key is required');
     }
-    return await this.jwtService.signAsync(payload as object, { secret: secret_key, ...options });
+    return await this.jwtService.signAsync(payload as object, {
+      secret: secret_key,
+      ...options,
+    });
   }
 
   async verifyToken({
@@ -28,7 +31,7 @@ export class TokenService {
     secret_key: string | undefined;
   }): Promise<any> {
     if (!secret_key) {
-      throw new Error("Token secret key is required");
+      throw new Error('Token secret key is required');
     }
     return await this.jwtService.verifyAsync(token, { secret: secret_key });
   }

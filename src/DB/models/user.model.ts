@@ -78,7 +78,7 @@ export class User {
   @Prop({ type: [String] })
   fcmTokens?: string[];
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   friends?: Types.ObjectId[];
 
   @Prop()
@@ -86,6 +86,9 @@ export class User {
 
   @Prop()
   isDeleted?: boolean; // Add this property
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }] })
+  wishList?: Types.ObjectId[];
 
   @Prop()
   createdAt: Date;

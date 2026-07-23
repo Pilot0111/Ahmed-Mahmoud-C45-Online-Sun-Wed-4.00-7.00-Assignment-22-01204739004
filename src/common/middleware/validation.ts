@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
-import { NextFunction, Request, Response } from "express";
-import { ZodType } from "zod";
-import { GraphQLError } from "graphql";
+import { NextFunction, Request, Response } from 'express';
+import { ZodType } from 'zod';
+import { GraphQLError } from 'graphql';
 
 type reqType = keyof Request;
 type schemaType = Partial<Record<reqType, ZodType>>;
@@ -12,22 +12,24 @@ export const Validation = (schema: schemaType) => {
     for (const key of Object.keys(schema) as reqType[]) {
       const currentSchema = schema[key];
       if (!currentSchema) continue;
-      if (req?.file){
-       req.body.file = req.file;
+      if (req?.file) {
+        req.body.file = req.file;
       }
-      if (req?.files){
+      if (req?.files) {
         req.body.files = req.files;
       }
 
       const result = currentSchema.safeParse(req[key]);
       if (!result.success) {
         result.error.issues.forEach((issue) => {
-          validationErrors.push(`${String(key)}.${issue.path.join(".")}: ${issue.message}`);
+          validationErrors.push(
+            `${String(key)}.${issue.path.join('.')}: ${issue.message}`,
+          );
         });
       }
     }
     if (validationErrors.length > 0) {
-      return next(new BadRequestException(validationErrors.join(", ")));
+      return next(new BadRequestException(validationErrors.join(', ')));
     }
     next();
   };
@@ -49,11 +51,11 @@ export const Validation_GQL = async (schema: ZodType, data: any) => {
   }
 
   if (errorValidation.length) {
-    throw new GraphQLError("Validation failed", {
+    throw new GraphQLError('Validation failed', {
       extensions: {
-        code: "BAD_REQUEST",
+        code: 'BAD_REQUEST',
         status: 400,
-        message: "one or more fields have validation errors",
+        message: 'one or more fields have validation errors',
         errors: errorValidation,
       },
     });

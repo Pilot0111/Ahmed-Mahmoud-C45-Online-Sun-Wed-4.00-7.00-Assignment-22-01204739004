@@ -1,5 +1,13 @@
-export const otpTemplate = ({ userName = 'User', otp, subject = 'Verification Code' }: { userName?: string, otp: string, subject?: string }) => {
-    return `
+export const otpTemplate = ({
+  userName = 'User',
+  otp,
+  subject = 'Verification Code',
+}: {
+  userName?: string;
+  otp: string;
+  subject?: string;
+}) => {
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -103,4 +111,4 @@ export const otpTemplate = ({ userName = 'User', otp, subject = 'Verification Co
     </body>
     </html>
     `;
-};
+};

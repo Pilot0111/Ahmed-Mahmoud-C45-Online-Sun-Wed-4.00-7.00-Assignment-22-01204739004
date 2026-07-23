@@ -21,7 +21,6 @@ import { GenderEnum } from 'src/common/enum/user.enum';
 
 // ─── Custom IsMatch Validator ─────────────────────────────────────────────────
 
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 @ValidatorConstraint({ name: 'matchKey', async: false })
 export class matchKey implements ValidatorConstraintInterface {
   validate(value: string, args: ValidationArguments) {
@@ -39,7 +38,7 @@ export function IsMatch(
   constraints: string[],
   validationOptions?: ValidationOptions,
 ) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

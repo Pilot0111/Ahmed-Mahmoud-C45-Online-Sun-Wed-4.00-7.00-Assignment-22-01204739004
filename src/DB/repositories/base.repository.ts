@@ -7,7 +7,7 @@ import {
   QueryOptions,
   Types,
   UpdateQuery,
-} from "mongoose";
+} from 'mongoose';
 
 abstract class BaseRepository<TDocument> {
   constructor(protected readonly model: Model<TDocument>) {}
@@ -16,9 +16,7 @@ abstract class BaseRepository<TDocument> {
     return this.model.create(data);
   }
 
-  async findById(
-    id: any,
-  ): Promise<HydratedDocument<TDocument> | null> {
+  async findById(id: any): Promise<HydratedDocument<TDocument> | null> {
     return this.model.findById(id).exec();
   }
   async findOne({

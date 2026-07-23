@@ -1,4 +1,8 @@
-import { BadGatewayException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { Types } from 'mongoose';
 import { HydratedUserDocument } from 'src/DB/models/user.model';
 import { S3Service } from 'src/common/service/s3.service';
@@ -34,11 +38,11 @@ export class BrandService {
 
     const logo = s3Key;
     // create brand
-    const brand = await this.brandRepository.create({ 
-      ...body, 
-      logo, 
+    const brand = await this.brandRepository.create({
+      ...body,
+      logo,
       slogan,
-      createdBy: user._id 
+      createdBy: user._id,
     });
     if (!brand) {
       await this.s3Service.deleteFile(s3Key);
@@ -50,7 +54,11 @@ export class BrandService {
     };
   }
 
-  async updateBrand(body: UpdateBrandDto, id: Types.ObjectId, user: HydratedUserDocument) {
+  async updateBrand(
+    body: UpdateBrandDto,
+    id: Types.ObjectId,
+    user: HydratedUserDocument,
+  ) {
     const { name, slogan } = body;
 
     const brand = await this.brandRepository.findOne({ filter: { _id: id } });
@@ -59,7 +67,9 @@ export class BrandService {
     }
 
     if (name && name == brand.name) {
-      throw new ConflictException('name not change please make any change to update it');
+      throw new ConflictException(
+        'name not change please make any change to update it',
+      );
     }
 
     if (name && (await this.brandRepository.findOne({ filter: { name } }))) {
@@ -103,7 +113,9 @@ export class BrandService {
   }
 
   async softDelete(id: Types.ObjectId, user: HydratedUserDocument) {
-    const brand = await this.brandRepository.findOne({ filter: { _id: id, deletedAt: { $exists: false } } });
+    const brand = await this.brandRepository.findOne({
+      filter: { _id: id, deletedAt: { $exists: false } },
+    });
     if (!brand) {
       throw new ConflictException('Brand does not exist or is already deleted');
     }

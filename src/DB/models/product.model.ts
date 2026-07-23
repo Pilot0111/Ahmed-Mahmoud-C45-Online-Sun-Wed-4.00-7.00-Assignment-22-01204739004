@@ -13,7 +13,13 @@ import slugify from 'slugify';
   strictQuery: true,
 })
 export class Product {
-  @Prop({ type: String, required: true, minlength: 3, trim: true, unique: true })
+  @Prop({
+    type: String,
+    required: true,
+    minlength: 3,
+    trim: true,
+    unique: true,
+  })
   name: string;
 
   @Prop({
@@ -75,7 +81,11 @@ export const ProductSchema = SchemaFactory.createForClass(Product);
 ProductSchema.pre(['findOneAndUpdate', 'updateOne'], function () {
   const updated = this.getUpdate() as UpdateQuery<Product>;
   if (updated?.name) {
-    updated.slug = slugify(updated.name as string, { replacement: '-', trim: true, lower: true });
+    updated.slug = slugify(updated.name as string, {
+      replacement: '-',
+      trim: true,
+      lower: true,
+    });
   }
 });
 

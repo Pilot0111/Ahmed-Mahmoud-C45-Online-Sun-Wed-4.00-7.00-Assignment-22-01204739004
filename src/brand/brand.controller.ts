@@ -37,7 +37,8 @@ export class BrandController {
   @Auth({ access_roles: [RoleEnum.admin] })
   @UseInterceptors(FileInterceptor('attachment', multerCloud()))
   async createBrand(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: CreateBrandDto,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: CreateBrandDto,
     @UploadedFile(ParseFilePipe) file: Express.Multer.File,
     @User() user: HydratedUserDocument,
   ) {
@@ -51,7 +52,8 @@ export class BrandController {
     @Param() params: IdDto,
     @Body() body: UpdateBrandDto,
     @User() user: HydratedUserDocument,
-    @UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file?: Express.Multer.File,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: false }))
+    file?: Express.Multer.File,
   ) {
     return this.brandService.updateBrand(body, params.id, user);
   }

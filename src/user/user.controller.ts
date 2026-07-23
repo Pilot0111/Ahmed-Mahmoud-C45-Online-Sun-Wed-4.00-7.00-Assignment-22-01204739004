@@ -13,9 +13,13 @@ import {
   UploadedFiles,
   Res,
   Query,
-  Req
+  Req,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
+import {
+  FileInterceptor,
+  FilesInterceptor,
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 import { Express, Response } from 'express';
 import { UserService } from './user.service';
 import { multerOptions, Store_Enum } from 'src/common/utils/multer.utlis';
@@ -32,7 +36,7 @@ import {
   ResetPasswordDto,
   SendNotificationDto,
   SignInGmailDto,
-  UpdatePasswordDto
+  UpdatePasswordDto,
 } from './dto/auth.dto';
 
 @Controller('user')
@@ -73,35 +77,40 @@ export class UserController {
 
   @Post('confirmEmail')
   confirmEmail(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: ConfirmEmailDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: ConfirmEmailDto,
   ) {
     return this.userService.confirmEmail(body);
   }
 
   @Post('resendOtp')
   resendOtp(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: ResendOtpDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: ResendOtpDto,
   ) {
     return this.userService.resendOtp(body);
   }
 
   @Post('signUpGmail')
   signUpGmail(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: SignInGmailDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: SignInGmailDto,
   ) {
     return this.userService.signUpGmail(body);
   }
 
   @Post('forgetPassword')
   forgetPassword(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: ForgetPasswordDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: ForgetPasswordDto,
   ) {
     return this.userService.forgetPassword(body);
   }
 
   @Post('resetPassword')
   resetPassword(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: ResetPasswordDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: ResetPasswordDto,
   ) {
     return this.userService.resetPassword(body);
   }
@@ -110,7 +119,8 @@ export class UserController {
   @Patch('updatePassword')
   updatePassword(
     @User() user: any,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: UpdatePasswordDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: UpdatePasswordDto,
   ) {
     return this.userService.updatePassword(user, body);
   }
@@ -130,7 +140,10 @@ export class UserController {
   @Auth()
   @Post('upload')
   @UseInterceptors(
-    FileInterceptor('attachment', multerOptions({ store_type: Store_Enum.disk }))
+    FileInterceptor(
+      'attachment',
+      multerOptions({ store_type: Store_Enum.disk }),
+    ),
   )
   uploadFile(@User() user: any, @UploadedFile() file: Express.Multer.File) {
     return this.userService.uploadImage(user, file);
@@ -139,9 +152,16 @@ export class UserController {
   @Auth()
   @Post('uploadMulti')
   @UseInterceptors(
-    FilesInterceptor('attachments', 5, multerOptions({ store_type: Store_Enum.disk }))
+    FilesInterceptor(
+      'attachments',
+      5,
+      multerOptions({ store_type: Store_Enum.disk }),
+    ),
   )
-  uploadFiles(@User() user: any, @UploadedFiles() files: Array<Express.Multer.File>) {
+  uploadFiles(
+    @User() user: any,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
     return this.userService.uploadImages(user, files);
   }
 
@@ -153,8 +173,8 @@ export class UserController {
         { name: 'avatar', maxCount: 1 },
         { name: 'background', maxCount: 3 },
       ],
-      multerOptions({ store_type: Store_Enum.disk })
-    )
+      multerOptions({ store_type: Store_Enum.disk }),
+    ),
   )
   uploadFileFields(
     @UploadedFiles()
@@ -170,7 +190,8 @@ export class UserController {
   @Post('presignedUrl')
   getPresignedUrl(
     @User() user: any,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: PresignedUrlDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: PresignedUrlDto,
   ) {
     return this.userService.getPresignedUrl(user, body);
   }
@@ -179,7 +200,8 @@ export class UserController {
   @Post('profilePicPresignedUrl')
   getProfilePicPresignedUrl(
     @User() user: any,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: PresignedUrlDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: PresignedUrlDto,
   ) {
     return this.userService.getProfilePicPresignedUrl(user, body);
   }
@@ -190,7 +212,7 @@ export class UserController {
     @User() user: any,
     @Req() req: any,
     @Query('download') download: string,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     const key = req.params[0];
     const isDownload = download === 'true';
@@ -208,7 +230,7 @@ export class UserController {
   getPresignedUrlByKey(
     @User() user: any,
     @Req() req: any,
-    @Query('download') download: string
+    @Query('download') download: string,
   ) {
     const key = req.params[0];
     const isDownload = download === 'true';
@@ -243,7 +265,8 @@ export class UserController {
   @Auth()
   @Post('sendNotification')
   sendNotification(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: SendNotificationDto
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: SendNotificationDto,
   ) {
     return this.userService.sendNotification(body);
   }

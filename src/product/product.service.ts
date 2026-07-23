@@ -1,4 +1,9 @@
-import { BadGatewayException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Types } from 'mongoose';
 import { HydratedUserDocument } from 'src/DB/models/user.model';
 import { S3Service } from 'src/common/service/s3.service';
@@ -6,7 +11,12 @@ import { ProductRepository } from 'src/DB/repositories/product.repository';
 import { CategoryRepository } from 'src/DB/repositories/category.repository';
 import { BrandRepository } from 'src/DB/repositories/brand.repository';
 import { SubCategoryRepository } from 'src/DB/repositories/sub-category.repository';
-import { CreateProductDto, UpdateProductDto, QueryDto } from './dto/product.dto';
+import {
+  CreateProductDto,
+  UpdateProductDto,
+  QueryDto,
+} from './dto/product.dto';
+import { UserRepository } from 'src/DB/repositories/user.repository';
 
 @Injectable()
 export class ProductService {
@@ -15,26 +25,44 @@ export class ProductService {
     private readonly categoryRepository: CategoryRepository,
     private readonly brandRepository: BrandRepository,
     private readonly subCategoryRepository: SubCategoryRepository,
+    private readonly userRepository: UserRepository,
     private readonly s3Service: S3Service,
   ) {}
 
   async createProduct(
     body: CreateProductDto,
-    files: { mainImage?: Express.Multer.File[], subImages?: Express.Multer.File[] },
+    files: {
+      mainImage?: Express.Multer.File[];
+      subImages?: Express.Multer.File[];
+    },
     user: HydratedUserDocument,
   ) {
-    let { name, description, price, discount, brandId, categoryId, subCategoryId } = body;
-    
-    price = price - (price * ((discount || 0) / 100));
+    let {
+      name,
+      description,
+      price,
+      discount,
+      brandId,
+      categoryId,
+      subCategoryId,
+    } = body;
+
+    price = price - price * ((discount || 0) / 100);
     // Validate relationships
-    const brand = await this.brandRepository.findOne({ filter: { _id: brandId, deletedAt: { $exists: false } } });
+    const brand = await this.brandRepository.findOne({
+      filter: { _id: brandId, deletedAt: { $exists: false } },
+    });
     if (!brand) throw new NotFoundException('Brand not found');
 
-    const category = await this.categoryRepository.findOne({ filter: { _id: categoryId, deletedAt: { $exists: false } } });
+    const category = await this.categoryRepository.findOne({
+      filter: { _id: categoryId, deletedAt: { $exists: false } },
+    });
     if (!category) throw new NotFoundException('Category not found');
 
     if (subCategoryId) {
-      const subCategory = await this.subCategoryRepository.findOne({ filter: { _id: subCategoryId, deletedAt: { $exists: false } } });
+      const subCategory = await this.subCategoryRepository.findOne({
+        filter: { _id: subCategoryId, deletedAt: { $exists: false } },
+      });
       if (!subCategory) throw new NotFoundException('SubCategory not found');
     }
 
@@ -64,13 +92,13 @@ export class ProductService {
         path: `products/${user._id}/subImages`,
       });
     }
-    
-    const product = await this.productRepository.create({ 
-      ...body, 
+
+    const product = await this.productRepository.create({
+      ...body,
       price,
       mainImage: mainImageKey,
       subImages: subImagesKeys,
-      createdBy: user._id 
+      createdBy: user._id,
     });
 
     if (!product) {
@@ -88,43 +116,66 @@ export class ProductService {
   }
 
   async updateProduct(
-    body: UpdateProductDto, 
-    id: Types.ObjectId, 
+    body: UpdateProductDto,
+    id: Types.ObjectId,
     user: HydratedUserDocument,
-    files?: { mainImage?: Express.Multer.File[], subImages?: Express.Multer.File[] },
+    files?: {
+      mainImage?: Express.Multer.File[];
+      subImages?: Express.Multer.File[];
+    },
   ) {
-    let { name, description, price, discount, brandId, categoryId, subCategoryId } = body;
+    let {
+      name,
+      description,
+      price,
+      discount,
+      brandId,
+      categoryId,
+      subCategoryId,
+    } = body;
 
-    const product = await this.productRepository.findOne({ filter: { _id: id } });
+    const product = await this.productRepository.findOne({
+      filter: { _id: id },
+    });
     if (!product) throw new NotFoundException('Product not exist');
 
     if (brandId) {
-      const brand = await this.brandRepository.findOne({ filter: { _id: brandId, deletedAt: { $exists: false } } });
+      const brand = await this.brandRepository.findOne({
+        filter: { _id: brandId, deletedAt: { $exists: false } },
+      });
       if (!brand) throw new NotFoundException('Brand not found');
     }
 
     if (categoryId) {
-      const category = await this.categoryRepository.findOne({ filter: { _id: categoryId, deletedAt: { $exists: false } } });
+      const category = await this.categoryRepository.findOne({
+        filter: { _id: categoryId, deletedAt: { $exists: false } },
+      });
       if (!category) throw new NotFoundException('Category not found');
     }
 
     if (subCategoryId) {
-      const subCategory = await this.subCategoryRepository.findOne({ filter: { _id: subCategoryId, deletedAt: { $exists: false } } });
+      const subCategory = await this.subCategoryRepository.findOne({
+        filter: { _id: subCategoryId, deletedAt: { $exists: false } },
+      });
       if (!subCategory) throw new NotFoundException('SubCategory not found');
     }
 
     if (name && name == product.name) {
-      throw new ConflictException('name not change please make any change to update it');
+      throw new ConflictException(
+        'name not change please make any change to update it',
+      );
     }
 
     if (name && (await this.productRepository.findOne({ filter: { name } }))) {
       throw new ConflictException('name already exist');
     }
 
-    if (price !== undefined || discount !== undefined) {
-      const currentPrice = price ?? product.price;
-      const currentDiscount = discount ?? product.discount;
-      price = currentPrice - (currentPrice * (currentDiscount / 100));
+    if (price && discount) {
+      price = price - price * (discount / 100);
+    } else if (price) {
+      price = price - price * ((product.discount || 0) / 100);
+    } else if (discount) {
+      price = product.price - product.price * (discount / 100);
     }
 
     let mainImageKey = product.mainImage;
@@ -174,9 +225,7 @@ export class ProductService {
     };
 
     if (search) {
-      searchFilter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-      ];
+      searchFilter.$or = [{ name: { $regex: search, $options: 'i' } }];
     }
 
     const data = await this.productRepository.paginate({
@@ -189,9 +238,13 @@ export class ProductService {
   }
 
   async softDelete(id: Types.ObjectId, user: HydratedUserDocument) {
-    const product = await this.productRepository.findOne({ filter: { _id: id, deletedAt: { $exists: false } } });
+    const product = await this.productRepository.findOne({
+      filter: { _id: id, deletedAt: { $exists: false } },
+    });
     if (!product) {
-      throw new ConflictException('Product does not exist or is already deleted');
+      throw new ConflictException(
+        'Product does not exist or is already deleted',
+      );
     }
 
     const updated = await this.productRepository.findOneAndUpdate({
@@ -206,7 +259,9 @@ export class ProductService {
   }
 
   async hardDelete(id: Types.ObjectId, user: HydratedUserDocument) {
-    const product = await this.productRepository.findOne({ filter: { _id: id } });
+    const product = await this.productRepository.findOne({
+      filter: { _id: id },
+    });
     if (!product) {
       throw new ConflictException('Product does not exist');
     }
@@ -221,5 +276,35 @@ export class ProductService {
     await this.productRepository.findOneAndDelete({ filter: { _id: id } });
 
     return { message: 'Product hard deleted successfully' };
+  }
+
+  async addToWishList(user: HydratedUserDocument, id: Types.ObjectId) {
+    const product = await this.productRepository.findOne({ filter: { _id: id } });
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    let isExist = false;
+    const productExist = await this.userRepository.findOneAndUpdate({
+      filter: {
+        _id: user._id,
+        wishList: { $in: [id] },
+      },
+      update: {
+        $pull: { wishList: id },
+      },
+    });
+
+    if (!productExist) {
+      await this.userRepository.findOneAndUpdate({
+        filter: { _id: user._id },
+        update: {
+          $addToSet: { wishList: id },
+        },
+      });
+      isExist = true;
+    }
+
+    return { message: isExist ? 'Product added to wishlist' : 'Product removed from wishlist', isAdded: isExist };
   }
 }

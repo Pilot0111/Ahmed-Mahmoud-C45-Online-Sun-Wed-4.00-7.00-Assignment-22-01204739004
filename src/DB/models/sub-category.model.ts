@@ -11,7 +11,13 @@ import slugify from 'slugify';
   strictQuery: true,
 })
 export class SubCategory {
-  @Prop({ type: String, required: true, minlength: 3, trim: true, unique: true })
+  @Prop({
+    type: String,
+    required: true,
+    minlength: 3,
+    trim: true,
+    unique: true,
+  })
   name: string;
 
   @Prop({
@@ -46,7 +52,11 @@ export const SubCategorySchema = SchemaFactory.createForClass(SubCategory);
 SubCategorySchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
   const updated = this.getUpdate() as UpdateQuery<SubCategory>;
   if (updated?.name) {
-    updated.slug = slugify(updated.name as string, { replacement: '-', trim: true, lower: true });
+    updated.slug = slugify(updated.name as string, {
+      replacement: '-',
+      trim: true,
+      lower: true,
+    });
   }
 
   if (updated?.deletedAt) {
@@ -57,7 +67,7 @@ SubCategorySchema.pre(['findOneAndUpdate', 'updateOne'], async function () {
       if (Product) {
         await Product.updateMany(
           { subCategoryId: docToUpdate._id, deletedAt: { $exists: false } },
-          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy }
+          { deletedAt: updated.deletedAt, deletedBy: updated.deletedBy },
         );
       }
     }

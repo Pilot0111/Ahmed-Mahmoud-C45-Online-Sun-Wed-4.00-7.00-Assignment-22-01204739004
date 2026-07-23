@@ -1,9 +1,9 @@
-import { 
-  ValidatorConstraint, 
-  ValidatorConstraintInterface, 
-  ValidationArguments, 
-  ValidationOptions, 
-  registerDecorator 
+import {
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+  ValidationOptions,
+  registerDecorator,
 } from 'class-validator';
 import { Types } from 'mongoose';
 
@@ -11,10 +11,12 @@ import { Types } from 'mongoose';
 export class ValidateIds implements ValidatorConstraintInterface {
   validate(value: string[], args: ValidationArguments) {
     if (!Array.isArray(value)) return false;
-    // Note: The instructor's code had `!= value.length`, but for class-validator 
+    // Note: The instructor's code had `!= value.length`, but for class-validator
     // validate() should return `true` if the validation succeeds.
     // So if all IDs are valid, the filtered length should EQUAL the original length.
-    return value.filter(id => Types.ObjectId.isValid(id)).length === value.length;
+    return (
+      value.filter((id) => Types.ObjectId.isValid(id)).length === value.length
+    );
   }
 
   defaultMessage(args: ValidationArguments) {
@@ -24,7 +26,7 @@ export class ValidateIds implements ValidatorConstraintInterface {
 
 // This wrapper is needed to actually use it as a decorator like @IsValidIds()
 export function IsValidIds(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

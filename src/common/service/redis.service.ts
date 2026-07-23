@@ -1,12 +1,12 @@
-import {type  RedisClientType } from "redis";  
-import { Types } from "mongoose";
-import { EventEnum } from "../../common/enum/emailEvent.enum";
-import { Injectable, Inject } from "@nestjs/common";
+import { type RedisClientType } from 'redis';
+import { Types } from 'mongoose';
+import { EventEnum } from '../../common/enum/emailEvent.enum';
+import { Injectable, Inject } from '@nestjs/common';
 
 @Injectable()
 export class RedisService {
   constructor(
-    @Inject('REDIS_CLIENT') private readonly client: RedisClientType
+    @Inject('REDIS_CLIENT') private readonly client: RedisClientType,
   ) {}
 
   // Key Generators
@@ -55,12 +55,12 @@ export class RedisService {
     ttl?: number;
   }) {
     try {
-      const data = typeof value === "string" ? value : JSON.stringify(value);
+      const data = typeof value === 'string' ? value : JSON.stringify(value);
       return ttl
         ? await this.client.set(key, data, { EX: ttl })
         : await this.client.set(key, data);
     } catch (error) {
-      console.error("Redis set failed!", error);
+      console.error('Redis set failed!', error);
     }
   }
 
@@ -74,7 +74,7 @@ export class RedisService {
         return data;
       }
     } catch (error) {
-      console.error("Redis get failed!", error);
+      console.error('Redis get failed!', error);
     }
   }
 
@@ -83,7 +83,7 @@ export class RedisService {
       if (!key) return 0;
       return await this.client.del(key);
     } catch (error) {
-      console.error("Redis del failed!", error);
+      console.error('Redis del failed!', error);
     }
   }
 
@@ -91,7 +91,7 @@ export class RedisService {
     try {
       return await this.client.incr(key);
     } catch (error) {
-      console.error("Redis incr failed!", error);
+      console.error('Redis incr failed!', error);
     }
   }
 
@@ -99,65 +99,88 @@ export class RedisService {
     try {
       return await this.client.ttl(key);
     } catch (error) {
-      console.error("Redis ttl failed!", error);
+      console.error('Redis ttl failed!', error);
     }
   }
 
-    // --- Socket.IO Session Management ---
+  // --- Socket.IO Session Management ---
 
-    /**
-     * Generates a unique key for storing a user's active socket IDs.
-     * Key format: user:Socket:<mongo_user_id>
-     */
-    socketKey(userId: Types.ObjectId) {
-        return `user:Socket:${userId}`;
-    }
+  /**
+   * Generates a unique key for storing a user's active socket IDs.
+   * Key format: user:Socket:<mongo_user_id>
+   */
+  socketKey(userId: Types.ObjectId) {
+    return `user:Socket:${userId}`;
+  }
 
-    // Adds a socket ID to the user's set of active connections
-    async addSocket({ userId, SocketId }: { userId: Types.ObjectId, SocketId: string }) {
-        return await this.client.sAdd(this.socketKey(userId), SocketId);
-    }
+  // Adds a socket ID to the user's set of active connections
+  async addSocket({
+    userId,
+    SocketId,
+  }: {
+    userId: Types.ObjectId;
+    SocketId: string;
+  }) {
+    return await this.client.sAdd(this.socketKey(userId), SocketId);
+  }
 
-    // Removes a specific socket ID when a tab is closed
-    async removeSocket({ userId, SocketId }: { userId: Types.ObjectId, SocketId: string }) {
-        return await this.client.sRem(this.socketKey(userId), SocketId);
-    }
+  // Removes a specific socket ID when a tab is closed
+  async removeSocket({
+    userId,
+    SocketId,
+  }: {
+    userId: Types.ObjectId;
+    SocketId: string;
+  }) {
+    return await this.client.sRem(this.socketKey(userId), SocketId);
+  }
 
-    // Retrieves all active socket IDs for a single user
-    async getSockets(userId: Types.ObjectId) {
-        return await this.client.sMembers(this.socketKey(userId));
-    }
+  // Retrieves all active socket IDs for a single user
+  async getSockets(userId: Types.ObjectId) {
+    return await this.client.sMembers(this.socketKey(userId));
+  }
 
-    async hasSockets(userId: Types.ObjectId) {
-        return await this.client.sCard(this.socketKey(userId));
-    }
+  async hasSockets(userId: Types.ObjectId) {
+    return await this.client.sCard(this.socketKey(userId));
+  }
 
-    async removeSocketUser(userId: Types.ObjectId) {
-        return await this.client.del(this.socketKey(userId));
-    }
+  async removeSocketUser(userId: Types.ObjectId) {
+    return await this.client.del(this.socketKey(userId));
+  }
 
   key(userId: Types.ObjectId) {
-        return `user:FCM:${userId}`;
-    }
+    return `user:FCM:${userId}`;
+  }
 
-    async addFCM({ userId, FCMToken }: { userId: Types.ObjectId, FCMToken: string }) {
-        return await this.client.sAdd(this.key(userId), FCMToken);
-    }
+  async addFCM({
+    userId,
+    FCMToken,
+  }: {
+    userId: Types.ObjectId;
+    FCMToken: string;
+  }) {
+    return await this.client.sAdd(this.key(userId), FCMToken);
+  }
 
-    async removeFCM({ userId, FCMToken }: { userId: Types.ObjectId, FCMToken: string }) {
-        return await this.client.sRem(this.key(userId), FCMToken);
-    }
+  async removeFCM({
+    userId,
+    FCMToken,
+  }: {
+    userId: Types.ObjectId;
+    FCMToken: string;
+  }) {
+    return await this.client.sRem(this.key(userId), FCMToken);
+  }
 
-    async getFCMs(userId: Types.ObjectId) {
-        return await this.client.sMembers(this.key(userId));
-    }
+  async getFCMs(userId: Types.ObjectId) {
+    return await this.client.sMembers(this.key(userId));
+  }
 
-    async hasFCMs(userId: Types.ObjectId) {
-        return await this.client.sCard(this.key(userId));
-    }
+  async hasFCMs(userId: Types.ObjectId) {
+    return await this.client.sCard(this.key(userId));
+  }
 
-    async removeFCMUser(userId: Types.ObjectId) {
-        return await this.client.del(this.key(userId));
-    }
-
+  async removeFCMUser(userId: Types.ObjectId) {
+    return await this.client.del(this.key(userId));
+  }
 }

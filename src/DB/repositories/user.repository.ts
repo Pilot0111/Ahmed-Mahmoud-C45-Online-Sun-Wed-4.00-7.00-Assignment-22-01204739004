@@ -1,9 +1,9 @@
-import { Model } from "mongoose";
-import { Injectable , BadRequestException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import BaseRepository from "./base.repository";
-import { User, UserSchema } from "../models/user.model";
-import mongoose from "mongoose";
+import { Model } from 'mongoose';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import BaseRepository from './base.repository';
+import { User, UserSchema } from '../models/user.model';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class UserRepository extends BaseRepository<User> {
@@ -13,7 +13,7 @@ export class UserRepository extends BaseRepository<User> {
   async checkUser(email: string): Promise<boolean> {
     const emailExists = await this.findOne({ filter: { email } });
     if (emailExists) {
-      throw new BadRequestException("Email already exists");
+      throw new BadRequestException('Email already exists');
     }
     return true;
   }
@@ -23,7 +23,7 @@ export class UserRepository extends BaseRepository<User> {
 // TODO: remove once authentication.ts and auth.gql.ts are converted to NestJS guards
 const _UserModel =
   (mongoose.models.User as Model<User>) ||
-  mongoose.model<User>("User", UserSchema);
+  mongoose.model<User>('User', UserSchema);
 
 class _UserRepositorySingleton extends BaseRepository<User> {
   constructor() {

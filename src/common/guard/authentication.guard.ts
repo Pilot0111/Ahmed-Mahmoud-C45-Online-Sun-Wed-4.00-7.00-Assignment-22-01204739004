@@ -67,9 +67,10 @@ export class AuthenticationGuard implements CanActivate {
         context.getHandler(),
       );
       const tokenType = requiredTokenType || TokenEnum.access_token;
-      
+
       // Attempt to extract authorization header or fallback to query parameters
-      let authorization = req.headers?.authorization || req.get?.('authorization');
+      let authorization =
+        req.headers?.authorization || req.get?.('authorization');
 
       if (!authorization && req.query?.token && req.query?.prefix) {
         authorization = `${req.query.prefix} ${req.query.token}`;
@@ -92,7 +93,8 @@ export class AuthenticationGuard implements CanActivate {
         throw new UnauthorizedException('Authentication error: Token missing');
       }
 
-      const { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } = await getSignature(prefix);
+      const { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY } =
+        await getSignature(prefix);
 
       if (!ACCESS_SECRET_KEY || !REFRESH_SECRET_KEY) {
         throw new UnauthorizedException('Authentication error: Invalid prefix');
@@ -109,7 +111,9 @@ export class AuthenticationGuard implements CanActivate {
       });
 
       if (!decoded || !decoded?.id) {
-        throw new UnauthorizedException('Authentication error: Invalid token format');
+        throw new UnauthorizedException(
+          'Authentication error: Invalid token format',
+        );
       }
 
       const user = await this.userRepository.findOne({
@@ -144,7 +148,9 @@ export class AuthenticationGuard implements CanActivate {
         throw new UnauthorizedException('Authentication error: Token revoked');
       }
 
-      const decryptedPhone = user.phone ? symmetricDecryption(user.phone) : null;
+      const decryptedPhone = user.phone
+        ? symmetricDecryption(user.phone)
+        : null;
       user.phone = decryptedPhone;
 
       // 2. Attach the populated user to the appropriate object based on context type

@@ -1,39 +1,44 @@
 import { BadRequestException } from '@nestjs/common';
-import { TokenService } from "./toke.security";
+import { TokenService } from './toke.security';
 const tokenService = null as any as TokenService;
-import { RedisService } from "../../service/redis.service";
-import userRepositoryInstance from "../../../DB/repositories/user.repository";
+import { RedisService } from '../../service/redis.service';
+import userRepositoryInstance from '../../../DB/repositories/user.repository';
 
 // Dummy instance to satisfy TS compiler for legacy code
 const redisService = null as any as RedisService;
 
-
-import { RoleEnum } from "../../enum/user.enum";
-import { GraphQLError } from "graphql";
+import { RoleEnum } from '../../enum/user.enum';
+import { GraphQLError } from 'graphql';
 
 export class AuthGraphQL {
   static async authenticate(authorization: string | undefined) {
     if (!authorization) {
-      throw new GraphQLError("Authorization header is required", {
-        extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },
+      throw new GraphQLError('Authorization header is required', {
+        extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
       });
     }
 
-    const [prefix, token] = authorization.split(" ");
+    const [prefix, token] = authorization.split(' ');
     if (!token) {
-      throw new GraphQLError("Invalid token format", {
-        extensions: { code: "BAD_USER_INPUT", http: { status: 401 } },
+      throw new GraphQLError('Invalid token format', {
+        extensions: { code: 'BAD_USER_INPUT', http: { status: 401 } },
       });
     }
 
     // 1. Determine secret based on prefix (logic from your middleware)
-    const secret = prefix === "Admin" ? process.env.JWT_ACCESS_SECRET_ADMIN : process.env.JWT_ACCESS_SECRET_USER;
+    const secret =
+      prefix === 'Admin'
+        ? process.env.JWT_ACCESS_SECRET_ADMIN
+        : process.env.JWT_ACCESS_SECRET_USER;
 
     // 2. Verify Token
-    const decoded = await tokenService.verifyToken({ token, secret_key: secret });
+    const decoded = await tokenService.verifyToken({
+      token,
+      secret_key: secret,
+    });
     if (!decoded || !decoded.id) {
-      throw new GraphQLError("Invalid or expired token", {
-        extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },
+      throw new GraphQLError('Invalid or expired token', {
+        extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
       });
     }
 
@@ -42,22 +47,22 @@ export class AuthGraphQL {
       key: redisService.generateRevokeTokenKey(decoded.id, decoded.jti),
     });
     if (isRevoked) {
-      throw new GraphQLError("Token has been revoked. Please login again.", {
-        extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },
+      throw new GraphQLError('Token has been revoked. Please login again.', {
+        extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
       });
     }
 
     // 4. Find User
     const user = await userRepositoryInstance.findById(decoded.id);
     if (!user) {
-      throw new GraphQLError("User not found", {
-        extensions: { code: "NOT_FOUND", http: { status: 404 } },
+      throw new GraphQLError('User not found', {
+        extensions: { code: 'NOT_FOUND', http: { status: 404 } },
       });
     }
 
-    if (user.isDeleted) { 
-      throw new GraphQLError("Account is deleted", {
-        extensions: { code: "FORBIDDEN", http: { status: 403 } },
+    if (user.isDeleted) {
+      throw new GraphQLError('Account is deleted', {
+        extensions: { code: 'FORBIDDEN', http: { status: 403 } },
       });
     }
 
@@ -66,9 +71,12 @@ export class AuthGraphQL {
 
   static authorize(role: RoleEnum | undefined, allowedRoles: RoleEnum[]) {
     if (!role || !allowedRoles.includes(role)) {
-      throw new GraphQLError("Forbidden: You do not have the required permissions", {
-        extensions: { code: "FORBIDDEN", http: { status: 403 } },
-      });
+      throw new GraphQLError(
+        'Forbidden: You do not have the required permissions',
+        {
+          extensions: { code: 'FORBIDDEN', http: { status: 403 } },
+        },
+      );
     }
   }
 }

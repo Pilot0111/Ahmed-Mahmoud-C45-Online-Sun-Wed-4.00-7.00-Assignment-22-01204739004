@@ -1,12 +1,12 @@
-import nodemailer from "nodemailer";
-import Mail from "nodemailer/lib/mailer";
+import nodemailer from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
 
 let transporter: nodemailer.Transporter | null = null;
 
 const getTransporter = () => {
   if (!transporter) {
     transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASSWORD,
@@ -20,7 +20,7 @@ const getTransporter = () => {
 };
 export const sendEmail = async (mailOptions: Mail.Options = {}) => {
   try {
-    if (!mailOptions.to) throw new Error("Recipient email (to) is missing");
+    if (!mailOptions.to) throw new Error('Recipient email (to) is missing');
 
     const mailer = getTransporter();
     const info = await mailer.sendMail({
@@ -29,7 +29,7 @@ export const sendEmail = async (mailOptions: Mail.Options = {}) => {
     });
     return info.accepted.length > 0;
   } catch (error: any) {
-    console.error("Nodemailer transport error:", error.message);
+    console.error('Nodemailer transport error:', error.message);
     return false;
   }
 };

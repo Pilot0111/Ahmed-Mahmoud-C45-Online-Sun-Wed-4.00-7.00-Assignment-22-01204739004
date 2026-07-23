@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   Put,
+  Patch,
   Param,
   Get,
   Query,
@@ -12,7 +13,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { CreateProductDto, IdDto, QueryDto, UpdateProductDto } from './dto/product.dto';
+import {
+  CreateProductDto,
+  IdDto,
+  QueryDto,
+  UpdateProductDto,
+} from './dto/product.dto';
 import { Auth } from 'src/common/decorator/auth.decorator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import multerCloud from 'src/common/middleware/multer.cloud';
@@ -26,13 +32,23 @@ export class ProductController {
 
   @Auth({ access_roles: [RoleEnum.admin] })
   @Post()
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'mainImage', maxCount: 1 },
-    { name: 'subImages', maxCount: 5 }
-  ], multerCloud()))
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'mainImage', maxCount: 1 },
+        { name: 'subImages', maxCount: 5 },
+      ],
+      multerCloud(),
+    ),
+  )
   create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: CreateProductDto,
-    @UploadedFiles() files: { mainImage?: Express.Multer.File[], subImages?: Express.Multer.File[] },
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: CreateProductDto,
+    @UploadedFiles()
+    files: {
+      mainImage?: Express.Multer.File[];
+      subImages?: Express.Multer.File[];
+    },
     @User() user: HydratedUserDocument,
   ) {
     return this.productService.createProduct(body, files, user);
@@ -40,21 +56,34 @@ export class ProductController {
 
   @Auth({ access_roles: [RoleEnum.admin] })
   @Put('/:id')
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'mainImage', maxCount: 1 },
-    { name: 'subImages', maxCount: 5 }
-  ], multerCloud()))
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'mainImage', maxCount: 1 },
+        { name: 'subImages', maxCount: 5 },
+      ],
+      multerCloud(),
+    ),
+  )
   update(
     @Param() { id }: IdDto,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: UpdateProductDto,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    body: UpdateProductDto,
     @User() user: HydratedUserDocument,
-    @UploadedFiles() files?: { mainImage?: Express.Multer.File[], subImages?: Express.Multer.File[] },
+    @UploadedFiles()
+    files?: {
+      mainImage?: Express.Multer.File[];
+      subImages?: Express.Multer.File[];
+    },
   ) {
     return this.productService.updateProduct(body, id, user, files);
   }
 
   @Get()
-  getAll(@Query(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) query: QueryDto) {
+  getAll(
+    @Query(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    query: QueryDto,
+  ) {
     return this.productService.getAllProducts(query);
   }
 
@@ -68,5 +97,14 @@ export class ProductController {
   @Delete('/hard/:id')
   hardDelete(@Param() { id }: IdDto, @User() user: HydratedUserDocument) {
     return this.productService.hardDelete(id, user);
+  }
+
+  @Auth({ access_roles: [RoleEnum.user, RoleEnum.admin] })
+  @Patch('/wishList/:id')
+  addToWishList(
+    @Param() { id }: IdDto,
+    @User() user: HydratedUserDocument,
+  ) {
+    return this.productService.addToWishList(user, id);
   }
 }

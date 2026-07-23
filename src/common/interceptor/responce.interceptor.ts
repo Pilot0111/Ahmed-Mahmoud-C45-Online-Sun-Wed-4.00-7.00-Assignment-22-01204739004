@@ -12,10 +12,7 @@ export interface Response<T> {
 }
 
 @Injectable()
-export class ResponceInterceptor<T> implements NestInterceptor<
-  T,
-  Response<T>
-> {
+export class ResponceInterceptor<T> implements NestInterceptor<T, Response<T>> {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
