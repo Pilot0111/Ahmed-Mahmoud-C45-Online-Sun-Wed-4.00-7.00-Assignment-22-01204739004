@@ -37,7 +37,7 @@ export class BrandController {
   @Auth({ access_roles: [RoleEnum.admin] })
   @UseInterceptors(FileInterceptor('attachment', multerCloud()))
   async createBrand(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: CreateBrandDto,
     @UploadedFile(ParseFilePipe) file: Express.Multer.File,
     @User() user: HydratedUserDocument,

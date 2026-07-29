@@ -45,7 +45,7 @@ export class Cart {
 
 export const CartSchema = SchemaFactory.createForClass(Cart);
 
-CartSchema.pre('save', function (next: mongoose.CallbackWithoutResultAndOptionalError) {
+CartSchema.pre('save', function () {
   if (this.products && this.products.length > 0) {
     this.subTotal = this.products.reduce(
       (total, product) => total + product.quantity * product.finalPrice,
@@ -54,7 +54,6 @@ CartSchema.pre('save', function (next: mongoose.CallbackWithoutResultAndOptional
   } else {
     this.subTotal = 0;
   }
-  next();
 });
 
 export const cartModel = MongooseModule.forFeature([{ name: Cart.name, schema: CartSchema }]);

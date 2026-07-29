@@ -42,7 +42,7 @@ export class ProductController {
     ),
   )
   create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: CreateProductDto,
     @UploadedFiles()
     files: {
@@ -67,7 +67,7 @@ export class ProductController {
   )
   update(
     @Param() { id }: IdDto,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: UpdateProductDto,
     @User() user: HydratedUserDocument,
     @UploadedFiles()
@@ -81,7 +81,7 @@ export class ProductController {
 
   @Get()
   getAll(
-    @Query(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Query()
     query: QueryDto,
   ) {
     return this.productService.getAllProducts(query);

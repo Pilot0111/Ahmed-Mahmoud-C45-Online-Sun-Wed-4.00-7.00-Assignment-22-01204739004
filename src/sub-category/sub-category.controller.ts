@@ -9,7 +9,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
-  ValidationPipe,
+  ParseFilePipe,
 } from '@nestjs/common';
 import { SubCategoryService } from './sub-category.service';
 import {
@@ -32,9 +32,9 @@ export class SubCategoryController {
   @Post()
   @UseInterceptors(FileInterceptor('image', multerCloud()))
   create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: CreateSubCategoryDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: true })) file: Express.Multer.File,
     @User() user: HydratedUserDocument,
   ) {
     return this.subCategoryService.createSubCategory(body, file, user);
@@ -44,7 +44,7 @@ export class SubCategoryController {
   @Put('/:id')
   update(
     @Param() { id }: IdDto,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: UpdateSubCategoryDto,
     @User() user: HydratedUserDocument,
   ) {
@@ -53,7 +53,7 @@ export class SubCategoryController {
 
   @Get()
   getAll(
-    @Query(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Query()
     query: QueryDto,
   ) {
     return this.subCategoryService.getAllSubCategories(query);

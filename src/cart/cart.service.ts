@@ -25,53 +25,62 @@ export class CartService {
   }
 
   async addToCart(body: AddToCartDto, user: HydratedUserDocument) {
-    const { productId, quantity } = body;
+    try {
+      const { productId, quantity } = body;
 
-    const product = await this.productRepository.findOne({ 
-      filter: { 
-        _id: productId, 
-        stock: { $gte: quantity },
-        deletedAt: { $exists: false } 
-      } 
-    });
-    
-    if (!product) {
-      throw new BadRequestException('Product not found or out of stock');
-    }
-
-    let cart = await this.cartRepository.findOne({ filter: { createdBy: user._id } });
-    
-    if (!cart) {
-      const newCart = await this.cartRepository.create({
-        createdBy: user._id,
-        products: [
-          {
-            productId: product._id,
-            quantity,
-            finalPrice: product.price,
-          }
-        ],
-        subTotal: 0,
+      const product = await this.productRepository.findOne({ 
+        filter: { 
+          _id: productId, 
+          stock: { $gte: quantity },
+          deletedAt: { $exists: false } 
+        } 
       });
-      return { message: 'Product added to cart', cart: newCart };
+      
+      if (!product) {
+        throw new BadRequestException('Product not found or out of stock');
+      }
+
+      let cart = await this.cartRepository.findOne({ filter: { createdBy: user._id } });
+      
+      if (!cart) {
+        const newCart = await this.cartRepository.create({
+          createdBy: user._id,
+          products: [
+            {
+              productId: product._id,
+              quantity,
+              finalPrice: product.price,
+            }
+          ],
+          subTotal: 0,
+        });
+        return { message: 'Product added to cart', cart: newCart };
+      }
+
+      if (!cart.products) {
+        cart.products = [];
+      }
+
+      const productExist = cart.products.find(
+        (p) => p.productId && p.productId.toString() === productId.toString()
+      );
+
+      if (productExist) {
+        throw new BadRequestException('Product already in cart');
+      }
+
+      cart.products.push({
+        productId: product._id as any,
+        quantity,
+        finalPrice: product.price,
+      });
+
+      const updatedCart = await cart.save();
+      return { message: 'Product added to cart', cart: updatedCart };
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+      throw new BadRequestException(`Debug Error: ${error.message} \n ${error.stack}`);
     }
-
-    const productExist = cart.products.find(
-      (p) => p.productId.toString() === productId.toString()
-    );
-
-    if (productExist) {
-      throw new BadRequestException('Product already in cart');
-    }
-
-    cart.products.push({
-      productId: product._id as any,
-      quantity,
-      finalPrice: product.price,
-    });
-
-    const updatedCart = await cart.save();
-    return { message: 'Product added to cart', cart: updatedCart };
   }
 
   async removeFromCart(body: RemoveFromCartDto, user: HydratedUserDocument) {

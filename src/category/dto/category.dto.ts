@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
@@ -20,6 +20,20 @@ export class CreateCategoryDto {
   @Length(3, 50)
   name: string;
 
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      if (value.startsWith('[')) {
+        try {
+          return JSON.parse(value);
+        } catch {
+          return value;
+        }
+      }
+      return value.split(',').map((id) => id.trim());
+    }
+    return value;
+  })
   @Validate(ValidateIds)
   brands: Types.ObjectId[];
 }

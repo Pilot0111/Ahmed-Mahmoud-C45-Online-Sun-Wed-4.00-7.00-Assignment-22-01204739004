@@ -22,6 +22,7 @@ import {
 } from '@nestjs/platform-express';
 import { Express, Response } from 'express';
 import { UserService } from './user.service';
+import { HydratedUserDocument } from 'src/DB/models/user.model';
 import { multerOptions, Store_Enum } from 'src/common/utils/multer.utlis';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -77,7 +78,7 @@ export class UserController {
 
   @Post('confirmEmail')
   confirmEmail(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: ConfirmEmailDto,
   ) {
     return this.userService.confirmEmail(body);
@@ -85,7 +86,7 @@ export class UserController {
 
   @Post('resendOtp')
   resendOtp(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: ResendOtpDto,
   ) {
     return this.userService.resendOtp(body);
@@ -93,7 +94,7 @@ export class UserController {
 
   @Post('signUpGmail')
   signUpGmail(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: SignInGmailDto,
   ) {
     return this.userService.signUpGmail(body);
@@ -101,7 +102,7 @@ export class UserController {
 
   @Post('forgetPassword')
   forgetPassword(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: ForgetPasswordDto,
   ) {
     return this.userService.forgetPassword(body);
@@ -109,7 +110,7 @@ export class UserController {
 
   @Post('resetPassword')
   resetPassword(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: ResetPasswordDto,
   ) {
     return this.userService.resetPassword(body);
@@ -119,7 +120,7 @@ export class UserController {
   @Patch('updatePassword')
   updatePassword(
     @User() user: any,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: UpdatePasswordDto,
   ) {
     return this.userService.updatePassword(user, body);
@@ -190,7 +191,7 @@ export class UserController {
   @Post('presignedUrl')
   getPresignedUrl(
     @User() user: any,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: PresignedUrlDto,
   ) {
     return this.userService.getPresignedUrl(user, body);
@@ -200,7 +201,7 @@ export class UserController {
   @Post('profilePicPresignedUrl')
   getProfilePicPresignedUrl(
     @User() user: any,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: PresignedUrlDto,
   ) {
     return this.userService.getProfilePicPresignedUrl(user, body);
@@ -214,7 +215,11 @@ export class UserController {
     @Query('download') download: string,
     @Res() res: Response,
   ) {
-    const key = req.params[0];
+    let key = req.params[0] || req.params['*'] || Object.values(req.params)[0];
+    if (typeof key !== 'string') {
+      const match = req.url.match(/\/file\/(.+?)(\?|$)/);
+      key = match ? decodeURIComponent(match[1]) : '';
+    }
     const isDownload = download === 'true';
     return this.userService.getFile(user, key, isDownload, res);
   }
@@ -232,40 +237,48 @@ export class UserController {
     @Req() req: any,
     @Query('download') download: string,
   ) {
-    const key = req.params[0];
+    let key = req.params[0] || req.params['*'] || Object.values(req.params)[0];
+    if (typeof key !== 'string') {
+      const match = req.url.match(/\/presignedUrlByKey\/(.+?)(\?|$)/);
+      key = match ? decodeURIComponent(match[1]) : '';
+    }
     const isDownload = download === 'true';
     return this.userService.getPresignedUrlByKey(user, key, isDownload);
   }
 
   @Auth()
   @Delete('file')
-  deleteFile(@User() user: any, @Body('key') key: string) {
+  deleteFile(@User() user: HydratedUserDocument, @Body('key') key: string) {
     return this.userService.deleteFile(user, key);
   }
 
   @Auth()
   @Delete('files')
-  deleteFiles(@User() user: any, @Body('keys') keys: string[]) {
+  deleteFiles(@User() user: HydratedUserDocument, @Body('keys') keys: string[]) {
     return this.userService.deleteFiles(user, keys);
   }
 
   @Auth()
   @Delete('folder/*')
-  deleteFolder(@User() user: any, @Req() req: any) {
-    const folderPath = req.params[0];
+  deleteFolder(@User() user: HydratedUserDocument, @Req() req: any) {
+    let folderPath = req.params[0] || req.params['*'] || Object.values(req.params)[0];
+    if (typeof folderPath !== 'string') {
+      const match = req.url.match(/\/folder\/(.+?)(\?|$)/);
+      folderPath = match ? decodeURIComponent(match[1]) : '';
+    }
     return this.userService.deleteFolder(user, folderPath);
   }
 
   @Auth()
   @Post('fcmToken')
-  saveFcmToken(@User() user: any, @Body('token') token: string) {
+  saveFcmToken(@User() user: HydratedUserDocument, @Body('token') token: string) {
     return this.userService.saveFcmToken(user, token);
   }
 
   @Auth()
   @Post('sendNotification')
   sendNotification(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: SendNotificationDto,
   ) {
     return this.userService.sendNotification(body);
@@ -274,7 +287,7 @@ export class UserController {
   @Get()
   @Auth()
   @UseInterceptors(ResponceInterceptor)
-  getUsers(@User() user: any) {
+  getUsers(@User() user: HydratedUserDocument) {
     return this.userService.getUsers();
   }
 
@@ -286,7 +299,7 @@ export class UserController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body(new ValidationPipe()) updateUserDto: any,
+    @Body() updateUserDto: any,
   ) {
     return this.userService.update(+id, updateUserDto);
   }

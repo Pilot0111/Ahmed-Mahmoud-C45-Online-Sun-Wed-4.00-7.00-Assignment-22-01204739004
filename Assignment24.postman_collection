@@ -32,7 +32,23 @@
               }
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.tokens && jsonData.tokens.accessToken) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.tokens.accessToken);",
+                  "} else if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Login",
@@ -59,7 +75,23 @@
               }
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.tokens && jsonData.tokens.accessToken) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.tokens.accessToken);",
+                  "} else if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Confirm Email",
@@ -870,7 +902,7 @@
                 {
                   "key": "name",
                   "type": "text",
-                  "value": "Category 1"
+                  "src": []
                 },
                 {
                   "key": "attachment",
@@ -905,13 +937,13 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/category/ID_HERE",
+              "raw": "{{baseUrl}}/category/CATEGORY_ID",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "category",
-                "ID_HERE"
+                "CATEGORY_ID"
               ]
             },
             "auth": {
@@ -930,7 +962,7 @@
                 {
                   "key": "name",
                   "type": "text",
-                  "value": "Updated Category 1"
+                  "src": []
                 },
                 {
                   "key": "attachment",
@@ -948,13 +980,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/category/ID_HERE/soft",
+              "raw": "{{baseUrl}}/category/CATEGORY_ID/soft",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "category",
-                "ID_HERE",
+                "CATEGORY_ID",
                 "soft"
               ]
             },
@@ -977,13 +1009,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/category/ID_HERE/hard",
+              "raw": "{{baseUrl}}/category/CATEGORY_ID/hard",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "category",
-                "ID_HERE",
+                "CATEGORY_ID",
                 "hard"
               ]
             },
@@ -1200,7 +1232,7 @@
                 {
                   "key": "name",
                   "type": "text",
-                  "value": "Brand 1"
+                  "src": []
                 },
                 {
                   "key": "attachment",
@@ -1218,13 +1250,13 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/brand/ID_HERE",
+              "raw": "{{baseUrl}}/brand/BRAND_ID",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "brand",
-                "ID_HERE"
+                "BRAND_ID"
               ]
             },
             "auth": {
@@ -1243,7 +1275,7 @@
                 {
                   "key": "name",
                   "type": "text",
-                  "value": "Updated Brand 1"
+                  "src": []
                 },
                 {
                   "key": "attachment",
@@ -1261,13 +1293,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/brand/ID_HERE/soft",
+              "raw": "{{baseUrl}}/brand/BRAND_ID/soft",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "brand",
-                "ID_HERE",
+                "BRAND_ID",
                 "soft"
               ]
             },
@@ -1290,13 +1322,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/brand/ID_HERE/hard",
+              "raw": "{{baseUrl}}/brand/BRAND_ID/hard",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "brand",
-                "ID_HERE",
+                "BRAND_ID",
                 "hard"
               ]
             },
@@ -1348,42 +1380,17 @@
                 {
                   "key": "name",
                   "type": "text",
-                  "value": "Product 1"
-                },
-                {
-                  "key": "description",
-                  "type": "text",
-                  "value": "Desc"
+                  "src": []
                 },
                 {
                   "key": "price",
                   "type": "text",
-                  "value": "100"
+                  "src": []
                 },
                 {
-                  "key": "discount",
+                  "key": "categoryId",
                   "type": "text",
-                  "value": "10"
-                },
-                {
-                  "key": "quantity",
-                  "type": "text",
-                  "value": "50"
-                },
-                {
-                  "key": "brand",
-                  "type": "text",
-                  "value": "BRAND_ID"
-                },
-                {
-                  "key": "category",
-                  "type": "text",
-                  "value": "CATEGORY_ID"
-                },
-                {
-                  "key": "subCategory",
-                  "type": "text",
-                  "value": "SUBCATEGORY_ID"
+                  "src": []
                 },
                 {
                   "key": "mainImage",
@@ -1406,13 +1413,13 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/product/ID_HERE",
+              "raw": "{{baseUrl}}/product/PRODUCT_ID",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "product",
-                "ID_HERE"
+                "PRODUCT_ID"
               ]
             },
             "auth": {
@@ -1431,7 +1438,12 @@
                 {
                   "key": "name",
                   "type": "text",
-                  "value": "Updated Product 1"
+                  "src": []
+                },
+                {
+                  "key": "mainImage",
+                  "type": "file",
+                  "src": []
                 }
               ]
             }
@@ -1461,14 +1473,14 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/product/soft/ID_HERE",
+              "raw": "{{baseUrl}}/product/soft/PRODUCT_ID",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "product",
                 "soft",
-                "ID_HERE"
+                "PRODUCT_ID"
               ]
             },
             "auth": {
@@ -1490,14 +1502,535 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/product/hard/ID_HERE",
+              "raw": "{{baseUrl}}/product/hard/PRODUCT_ID",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "product",
                 "hard",
-                "ID_HERE"
+                "PRODUCT_ID"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add To Wishlist",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/product/wishList/PRODUCT_ID",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "product",
+                "wishList",
+                "PRODUCT_ID"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sub Category",
+      "item": [
+        {
+          "name": "Create SubCategory",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sub-category",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sub-category"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "type": "text",
+                  "src": []
+                },
+                {
+                  "key": "categoryId",
+                  "type": "text",
+                  "src": []
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update SubCategory",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sub-category/SUBCATEGORY_ID",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sub-category",
+                "SUBCATEGORY_ID"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All SubCategories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sub-category",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sub-category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Soft Delete SubCategory",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sub-category/soft/SUBCATEGORY_ID",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sub-category",
+                "soft",
+                "SUBCATEGORY_ID"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hard Delete SubCategory",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sub-category/hard/SUBCATEGORY_ID",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sub-category",
+                "hard",
+                "SUBCATEGORY_ID"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add To Cart",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"quantity\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove From Cart",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart/remove",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart",
+                "remove"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart/update-quantity",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart",
+                "update-quantity"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"quantity\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart/clear",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart",
+                "clear"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Coupon",
+      "item": [
+        {
+          "name": "Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/coupon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "coupon"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SUMMER10\",\n  \"discount\": 10,\n  \"expiryDate\": \"2024-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "order"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"cash\",\n  \"address\": \"123 Street\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Payment With Stripe",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/stripe/ORDER_ID",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "order",
+                "stripe",
+                "ORDER_ID"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Webhook",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "order",
+                "webhook"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refund Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/refund/ORDER_ID",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "order",
+                "refund",
+                "ORDER_ID"
               ]
             },
             "auth": {

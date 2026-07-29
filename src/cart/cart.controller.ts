@@ -1,4 +1,4 @@
-import {
+import { 
   Controller,
   Get,
   Post,
@@ -6,6 +6,7 @@ import {
   Put,
   Delete,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDto, RemoveFromCartDto, UpdateProductQuantityDto } from './dto/cart.dto';

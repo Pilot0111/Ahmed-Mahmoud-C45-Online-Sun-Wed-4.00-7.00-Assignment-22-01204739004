@@ -17,7 +17,7 @@ export const Roles = (access_roles: RoleEnum[]) => {
 
 export function Auth({
   token_type = TokenEnum.access_token,
-  access_roles = [RoleEnum.user],
+  access_roles = [RoleEnum.user, RoleEnum.admin],
 }: {
   token_type?: TokenEnum;
   access_roles?: RoleEnum[];

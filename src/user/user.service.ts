@@ -145,6 +145,7 @@ export class UserService {
       phone,
       age,
       gender,
+      role,
     } = body;
     const normalizedEmail = email.toLowerCase();
 
@@ -164,7 +165,7 @@ export class UserService {
       phone: phone ? symmetricEncryption(phone) : undefined,
       age,
       gender,
-      role: RoleEnum.user,
+      role: role || RoleEnum.user,
     });
 
     await this.sendOtpFlow({

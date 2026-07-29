@@ -8,10 +8,6 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID as string;
-const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME as string;
-const AWS_REGION = process.env.AWS_REGION as string;
-const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY as string;
 import { randomUUID } from 'node:crypto';
 import { Store_Enum } from '../enum/multer.enum';
 import fs from 'node:fs';
@@ -24,10 +20,10 @@ export class S3Service {
 
   constructor() {
     this.client = new S3Client({
-      region: AWS_REGION,
+      region: process.env.AWS_REGION as string,
       credentials: {
-        accessKeyId: AWS_ACCESS_KEY_ID,
-        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
       },
     });
   }
@@ -46,7 +42,7 @@ export class S3Service {
     try {
       const key = `Social_Media_App/${path}/${randomUUID()}_${file.originalname}`;
       const command = new PutObjectCommand({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key: key,
         Body: file.buffer ? file.buffer : fs.createReadStream(file.path),
         ContentType: file.mimetype,
@@ -77,7 +73,7 @@ export class S3Service {
       const command = new Upload({
         client: this.client,
         params: {
-          Bucket: AWS_BUCKET_NAME,
+          Bucket: process.env.AWS_BUCKET_NAME,
           Key: key,
           // Use stream if file.path exists (disk storage),
           // fall back to buffer only if necessary (memory storage)
@@ -145,7 +141,7 @@ export class S3Service {
     try {
       const Key = `Social_Media_App/${path}/${randomUUID()}_${fileName}`;
       const command = new PutObjectCommand({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key,
         ContentType: contentType,
       });
@@ -160,7 +156,7 @@ export class S3Service {
   async deleteFile(key: string): Promise<void> {
     try {
       const command = new DeleteObjectCommand({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key: key,
       });
       await this.client.send(command);
@@ -173,7 +169,7 @@ export class S3Service {
   async getFile({ key }: { key: string }) {
     try {
       const command = new GetObjectCommand({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key: key,
       });
       return await this.client.send(command);
@@ -189,7 +185,7 @@ export class S3Service {
   async deleteFiles(keys: string[]): Promise<void> {
     try {
       const command = new DeleteObjectsCommand({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Delete: {
           Objects: keys.map((key) => ({ Key: key })),
         },
@@ -208,7 +204,7 @@ export class S3Service {
       const prefix = `Social_Media_App/${normalizedPath}/`;
 
       const command = new ListObjectsV2Command({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Prefix: prefix,
       });
 
@@ -232,7 +228,7 @@ export class S3Service {
     try {
       const Key = `Social_Media_App/${path}/${randomUUID()}_${fileName}`;
       const command = new PutObjectCommand({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key,
       });
       const url = await getSignedUrl(this.client, command, { expiresIn });
@@ -259,7 +255,7 @@ export class S3Service {
         : 'inline';
 
       const command = new GetObjectCommand({
-        Bucket: AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key: key,
         ResponseContentDisposition: disposition,
       });

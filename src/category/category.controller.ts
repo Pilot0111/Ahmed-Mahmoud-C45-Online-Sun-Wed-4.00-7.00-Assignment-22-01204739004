@@ -36,7 +36,7 @@ export class CategoryController {
   @Auth({ access_roles: [RoleEnum.admin] })
   @UseInterceptors(FileInterceptor('attachment', multerCloud()))
   async createCategory(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @Body()
     body: CreateCategoryDto,
     @UploadedFile(ParseFilePipe) file: Express.Multer.File,
     @User() user: HydratedUserDocument,

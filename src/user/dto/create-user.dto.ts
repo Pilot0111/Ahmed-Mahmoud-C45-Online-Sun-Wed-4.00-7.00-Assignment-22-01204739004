@@ -17,7 +17,7 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { GenderEnum } from 'src/common/enum/user.enum';
+import { GenderEnum, RoleEnum } from 'src/common/enum/user.enum';
 
 // ─── Custom IsMatch Validator ─────────────────────────────────────────────────
 
@@ -92,4 +92,8 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @IsOptional()
+  @IsEnum(RoleEnum)
+  role?: RoleEnum;
 }
